@@ -54,6 +54,12 @@ function theme_styleguide_item($variables) {
   $output .= '<div class="styleguide">';
   $output .= $content;
   $output .= '</div>';
+  $output .= l(t('Back to top'), '', array(
+    'external' => TRUE,
+    'attributes' => array(
+      'class' => array('styleguide-top'),
+    ),
+  ));
   return $output;
 }
 
