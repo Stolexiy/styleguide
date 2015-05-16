@@ -188,13 +188,25 @@ function styleguide_styleguide() {
     'content' => $content,
     'group' => t('Text'),
   );
+
+  // Store all of the current messages, do not display them here.
+  $message_queue = drupal_get_messages();
   $messages = array('status', 'warning', 'error');
   foreach ($messages as $message) {
+    // Set a new message with a link.
+    drupal_set_message(styleguide_sentence('http://www.example.com'), $message);
     $items[$message . '-message'] = array(
       'title' => ucwords($message) . ' message',
-      'content' => '<div class="messages ' . $message . '"><h2 class="element-invisible">Status message</h2>' . styleguide_sentence('http://www.example.com') . '</div>',
+      'content' => theme('status_messages', array('display' => $message)),
     );
   }
+  // Loop through the original messages, resetting them.
+  foreach ($message_queue as $message_type => $messages) {
+    foreach ($messages as $message) {
+      drupal_set_message($message, $message_type);
+    }
+  }
+
   // Form elements.
   $fake = $form_state = array();
   $elements = styleguide_form($fake, $form_state);
