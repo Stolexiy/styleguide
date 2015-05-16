@@ -192,7 +192,7 @@ function styleguide_styleguide() {
   foreach ($messages as $message) {
     $items[$message . '-message'] = array(
       'title' => ucwords($message) . ' message',
-      'content' => '<div class="messages ' . $message . '"><h2 class="element-invisible">Status message</h2>' . styleguide_sentence() . '</div>',
+      'content' => '<div class="messages ' . $message . '"><h2 class="element-invisible">Status message</h2>' . styleguide_sentence('http://www.example.com') . '</div>',
     );
   }
   // Form elements.

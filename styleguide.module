@@ -414,12 +414,30 @@ function styleguide_system_themes_page_alter(&$theme_groups) {
 
 /**
  * Generate a random sentence.
+ *
+ * @param string $link
+ *   The link to add to the sentence.
  */
-function styleguide_sentence() {
+function styleguide_sentence($link = FALSE) {
   $graph = strip_tags(styleguide_paragraph());
   $explode = explode('.', $graph);
   $rand = array_rand($explode);
-  return trim($explode[$rand]) . '.';
+  $sentence = trim($explode[$rand]);
+  if ($link) {
+    $explode = explode(' ', $sentence);
+    $link = array(
+      '#theme' => 'link',
+      '#text' => $explode[0],
+      '#path' => $link,
+      '#options' => array(
+        'attributes' => array(),
+        'html' => FALSE,
+      ),
+    );
+    $explode[0] = render($link);
+    $sentence = implode(' ', $explode);
+  }
+  return  $sentence . '.';
 }
 
 /**
@@ -655,7 +673,7 @@ function styleguide_links($url, $size = 4) {
 function styleguide_menu_item($url) {
   $menu_item = array(
     '#title' => styleguide_sentence(),
-    '#href' => $url, 
+    '#href' => $url,
     '#localized_options' => array(),
     '#attributes' => array(),
     '#below' => FALSE,
