@@ -1,0 +1,3 @@
+styleguide.local_tasks:
+  deriver: 'Drupal\styleguide\Plugin\Derivative\StyleguideLocalTasks'
+  weight: 100

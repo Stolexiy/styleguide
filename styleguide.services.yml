@@ -1,0 +1,5 @@
+services:
+  theme.negotiator.styleguide:
+    class: Drupal\styleguide\Theme\StyleguideThemeNegotiator
+    tags:
+      - { name: theme_negotiator, priority: 0 }

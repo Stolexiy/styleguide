@@ -1,0 +1,11 @@
+styleguide.page:
+  path: /admin/appearance/styleguide
+  defaults:
+    _controller: Drupal\styleguide\Controller\StyleguideController::page
+  requirements:
+    _permission: 'access content'
+  options:
+    _admin_route: FALSE
+
+route_callbacks:
+  - '\Drupal\styleguide\Routing\StyleguideRoutes::routes'
