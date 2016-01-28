@@ -7,10 +7,37 @@
 namespace Drupal\styleguide\Form;
 
 
+use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\styleguide\GeneratorInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
-class StyleguideForm extends FormBase {
+class StyleguideForm extends FormBase implements ContainerInjectionInterface {
+
+  /**
+   * The styleguide generator service.
+   *
+   * @var \Drupal\styleguide\Generator
+   */
+  protected $generator;
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static($container->get('styleguide.generator'));
+  }
+
+  /**
+   * Constructs a new StyleguideForm.
+   *
+   * @param \Drupal\styleguide\Generator $styleguide_generator
+   *   The styleguide generator service.
+   */
+  public function __construct(GeneratorInterface $styleguide_generator) {
+    $this->generator = $styleguide_generator;
+  }
 
   /**
    *
@@ -39,7 +66,7 @@ class StyleguideForm extends FormBase {
   public function buildForm(array $form, FormStateInterface $form_state, $form_keys = array()) {
     $form = array();
     $options = array();
-    $list = styleguide_list();
+    $list = $this->generator->wordList();
     foreach ($list as $item) {
       $options[$item] = $item;
     }
@@ -47,45 +74,45 @@ class StyleguideForm extends FormBase {
       '#type' => 'select',
       '#title' => t('Select'),
       '#options' => $options,
-      '#description' => styleguide_sentence(),
+      '#description' => $this->generator->sentence(),
     );
     $form['checkbox'] = array(
       '#type' => 'checkbox',
       '#title' => t('Checkbox'),
       '#value' => 1,
       '#default_value' => 1,
-      '#description' => styleguide_sentence(),
+      '#description' => $this->generator->sentence(),
     );
     $form['checkboxes'] = array(
       '#type' => 'checkboxes',
       '#title' => t('Checkboxes'),
       '#options' => $options,
-      '#description' => styleguide_sentence(),
+      '#description' => $this->generator->sentence(),
     );
     $form['radios'] = array(
       '#type' => 'radios',
       '#title' => t('Radios'),
       '#options' => $options,
-      '#description' => styleguide_sentence(),
+      '#description' => $this->generator->sentence(),
     );
     $form['textfield'] = array(
       '#type' => 'textfield',
       '#title' => t('Textfield'),
-      '#default_value' => styleguide_word(3, 'ucfirst'),
-      '#description' => styleguide_sentence(),
+      '#default_value' => $this->generator->words(3, 'ucfirst'),
+      '#description' => $this->generator->sentence(),
     );
     $form['autocomplete'] = array(
       '#type' => 'textfield',
       '#title' => t('Autocomplete textfield'),
-      '#default_value' => styleguide_word(),
-      '#description' => styleguide_sentence(),
+      '#default_value' => $this->generator->words(),
+      '#description' => $this->generator->sentence(),
       '#autocomplete_path' => 'user/autocomplete',
     );
     $form['textfield-machine'] = array(
       '#type' => 'textfield',
       '#title' => t('Textfield, with machine name'),
-      '#default_value' => styleguide_word(3, 'ucfirst'),
-      '#description' => styleguide_sentence(),
+      '#default_value' => $this->generator->words(3, 'ucfirst'),
+      '#description' => $this->generator->sentence(),
     );
     $form['machine_name'] = array(
       '#type' => 'machine_name',
@@ -94,34 +121,34 @@ class StyleguideForm extends FormBase {
         'exists' => 'styleguide_machine_name_exists',
         'source' => array('textfield-machine'),
       ),
-      '#description' => styleguide_sentence(),
+      '#description' => $this->generator->sentence(),
     );
     $form['textarea'] = array(
       '#type' => 'textarea',
       '#title' => t('Textarea'),
-      '#default_value' => styleguide_paragraph(),
-      '#description' => styleguide_sentence(),
+      '#default_value' => $this->generator->paragraphs(),
+      '#description' => $this->generator->sentence(),
     );
     $form['date'] = array(
       '#type' => 'date',
       '#title' => t('Date'),
-      '#description' => styleguide_sentence(),
+      '#description' => $this->generator->sentence(),
     );
     $form['file'] = array(
       '#type' => 'file',
       '#title' => t('File'),
-      '#description' => styleguide_sentence(),
+      '#description' => $this->generator->sentence(),
     );
     $form['managed_file'] = array(
       '#type' => 'managed_file',
       '#title' => t('Managed file'),
-      '#description' => styleguide_sentence(),
+      '#description' => $this->generator->sentence(),
     );
     $form['password'] = array(
       '#type' => 'password',
       '#title' => t('Password'),
-      '#default_value' => styleguide_word(),
-      '#description' => styleguide_sentence(),
+      '#default_value' => $this->generator->words(),
+      '#description' => $this->generator->sentence(),
     );
     $form['password_confirm'] = array(
       '#type' => 'password_confirm',
@@ -131,26 +158,26 @@ class StyleguideForm extends FormBase {
       '#type' => 'weight',
       '#title' => t('Weight'),
       '#delta' => 10,
-      '#description' => styleguide_sentence(),
+      '#description' => $this->generator->sentence(),
     );
     $form['fieldset-collapsed'] = array(
       '#type' => 'fieldset',
       '#title' => t('Fieldset collapsed'),
       '#collapsible' => TRUE,
       '#collapsed' => TRUE,
-      '#description' => styleguide_sentence(),
+      '#description' => $this->generator->sentence(),
     );
     $form['fieldset-collapsible'] = array(
       '#type' => 'fieldset',
       '#title' => t('Fieldset collapsible'),
       '#collapsible' => TRUE,
-      '#description' => styleguide_sentence(),
+      '#description' => $this->generator->sentence(),
     );
     $form['fieldset'] = array(
       '#type' => 'fieldset',
       '#title' => t('Fieldset'),
       '#collapsible' => FALSE,
-      '#description' => styleguide_sentence(),
+      '#description' => $this->generator->sentence(),
     );
     $fieldsets = array('fieldset', 'fieldset-collapsed', 'fieldset-collapsible');
     $count = 0;
@@ -169,13 +196,13 @@ class StyleguideForm extends FormBase {
       $form['vertical_tabs'][$fieldset] = $form[$fieldset];
     }
     $form['markup'] = array(
-      '#markup' => t('<p><em>Markup</em>: Note that markup does not allow titles or descriptions. Use "item" for those options.</p>') . styleguide_paragraph(1),
+      '#markup' => t('<p><em>Markup</em>: Note that markup does not allow titles or descriptions. Use "item" for those options.</p>') . $this->generator->paragraphs(1),
     );
     $form['item'] = array(
       '#type' => 'item',
       '#title' => t('Item'),
-      '#markup' => styleguide_paragraph(1),
-      '#description' => styleguide_sentence(),
+      '#markup' => $this->generator->paragraphs(1),
+      '#description' => $this->generator->sentence(),
     );
     $form['image_button'] = array(
       '#type' => 'image_button',

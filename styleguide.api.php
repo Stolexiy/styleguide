@@ -10,8 +10,8 @@
  * used to create a named anchor link on the Style Guide page.
  *
  * Options:
- *   -- 'title' (required). A string indicating the element name. 
- *   -- 'description' (optional). A short description of the item. 
+ *   -- 'title' (required). A string indicating the element name.
+ *   -- 'description' (optional). A short description of the item.
  *   -- 'theme' (optional). A string indicating the theme function to invoke.
  *    If used, you must return a 'variables' array element. Otherwise, you
  *    must return a 'content' string.
@@ -36,19 +36,19 @@ function hook_styleguide() {
   $items['ul'] = array(
     'title' => t('Unordered list'),
     'theme' => 'item_list',
-    'variables' => array('items' => styleguide_list(), 'type' => 'ul'),
+    'variables' => array('items' => wordList(), 'type' => 'ul'),
     'group' => t('Common'),
   );
   $items['text'] = array(
     'title' => t('Text block'),
-    'content' => styleguide_paragraph(3),
+    'content' => paragraphs(3),
     'group' => t('Text'),
     'description' => t('A block of three paragraphs'),
   );
   $items['h1'] = array(
     'title' => t('Text block'),
     'tag' => 'h1',
-    'content' => styleguide_word(3),
+    'content' => words(3),
     'group' => t('Text'),
   );
   $items['div-format'] = array(
@@ -56,7 +56,7 @@ function hook_styleguide() {
     'description' => t('Add the "format" class to emphasize an entire section.'),
     'tag' => 'div',
     'attributes' => array('class' => 'format'),
-    'content' => styleguide_paragraph(1),
+    'content' => paragraphs(1),
   );
   return $items;
 }

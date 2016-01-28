@@ -5,6 +5,7 @@
  */
 function comment_styleguide() {
   global $conf, $user;
+  $generator = \Drupal::service('styleguide.generator');
   $user_register = $conf['user_register'];
   $account = clone $user;
   $user->uid = 0;
@@ -21,7 +22,7 @@ function comment_styleguide() {
   $user = $account;
   $conf['user_register'] = $user_register;
 
-  $name = styleguide_word(2);
+  $name = $generator->words(2);
   $render = array(
     '#theme' => 'comment',
     '#comment' => (object) array(
@@ -49,7 +50,7 @@ function comment_styleguide() {
     ),
     '#node' => (object) array('nid' => 1, 'type' => 'styleguide'),
   );
-  $render['body'] = array('#markup' => styleguide_paragraph(2));
+  $render['body'] = array('#markup' => $generator->paragraphs(2));
   $items['comment'] = array(
     'title' => t('Comment'),
     'content' => drupal_render($render),

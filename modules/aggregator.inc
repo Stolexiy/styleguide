@@ -5,6 +5,7 @@
  */
 function aggregator_styleguide() {
   $items = array();
+  $generator = \Drupal::service('styleguide.generator');
 
   $items['aggregator_item'] = array(
     'title' => t('Aggregator item'),
@@ -13,15 +14,15 @@ function aggregator_styleguide() {
       'item' => (object)array(
         'iid' => 1,
         'fid' => 1,
-        'title' => styleguide_word(10, 'ucfirst'),
+        'title' => $generator->words(10, 'ucfirst'),
         'link' => 'http://drupal.org/project/styleguide',
-        'author' => styleguide_word(2, 'ucfirst'),
-        'description' => styleguide_paragraph(2),
+        'author' => $generator->words(2, 'ucfirst'),
+        'description' => $generator->paragraphs(2),
         'timestamp' => time() - 3600,
         'guid' => '',
-        'ftitle' => styleguide_word(3, 'ucfirst'),
+        'ftitle' => $generator->words(3, 'ucfirst'),
         'flink' => 'http://drupal.org/planet/rss.xml',
-        'categories' => array((object)array('title' => styleguide_word(3), 'cid' => 1)),
+        'categories' => array((object)array('title' => $generator->words(3), 'cid' => 1)),
       ),
     ),
     'group' => t('Aggregator'),
@@ -32,7 +33,7 @@ function aggregator_styleguide() {
     'theme' => 'aggregator_summary_item',
     'variables' => array(
       'item' => (object) array(
-        'title' => styleguide_word(10, 'ucfirst'),
+        'title' => $generator->words(10, 'ucfirst'),
         'link' => 'http://drupal.org/project/styleguide',
         'timestamp' => time() - 3600,
       ),

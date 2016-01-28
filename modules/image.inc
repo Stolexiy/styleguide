@@ -10,11 +10,12 @@
  */
 function image_styleguide() {
   $items = array();
+  $generator = \Drupal::service('styleguide.generator');
 
   // Get the sample file provided by the module.
   if (file_destination('public://styleguide-preview.jpg', FILE_EXISTS_ERROR) !== FALSE) {
     // Move the image so that styles may be applied.
-    file_unmanaged_copy(styleguide_image('vertical'), 'public://styleguide-preview.jpg', FILE_EXISTS_ERROR);
+    file_unmanaged_copy($generator->image('vertical'), 'public://styleguide-preview.jpg', FILE_EXISTS_ERROR);
   }
 
   // Iterate through the image styles on the site.
