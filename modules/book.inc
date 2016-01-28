@@ -4,13 +4,15 @@
  * Implements hook_styleguide().
  */
 function book_styleguide() {
+  $generator = \Drupal::service('styleguide.generator');
+
   $flat = &drupal_static('book_get_flat_menu', array());
   $flat = array(
     1 => array(
       2 => array(
         'mlid' => 2,
         'plid' => 0,
-        'title' => styleguide_word(5, 'ucfirst'),
+        'title' => $generator->words(5, 'ucfirst'),
         'access' => TRUE,
         'hidden' => FALSE,
         'has_children' => TRUE,
@@ -22,7 +24,7 @@ function book_styleguide() {
       3 => array(
         'mlid' => 3,
         'plid' => 2,
-        'title' => styleguide_word(5, 'ucfirst'),
+        'title' => $generator->words(5, 'ucfirst'),
         'access' => TRUE,
         'hidden' => FALSE,
         'has_children' => FALSE,
@@ -34,7 +36,7 @@ function book_styleguide() {
       4 => array(
         'mlid' => 4,
         'plid' => 1,
-        'title' => styleguide_word(5, 'ucfirst'),
+        'title' => $generator->words(5, 'ucfirst'),
         'access' => TRUE,
         'hidden' => FALSE,
         'has_children' => FALSE,
@@ -46,7 +48,7 @@ function book_styleguide() {
       5 => array(
         'mlid' => 5,
         'plid' => 1,
-        'title' => styleguide_word(5, 'ucfirst'),
+        'title' => $generator->words(5, 'ucfirst'),
         'access' => TRUE,
         'hidden' => FALSE,
         'has_children' => FALSE,
@@ -63,7 +65,7 @@ function book_styleguide() {
     'theme' => 'book_navigation',
     'variables' => array('book_link' => array(
       'bid' => 0,
-      'link_title' => styleguide_word(5, 'ucfirst'),
+      'link_title' => $generator->words(5, 'ucfirst'),
       'depth' => 1,
       'mlid' => 1,
       'plid' => 2,

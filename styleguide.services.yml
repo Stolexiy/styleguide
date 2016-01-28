@@ -3,3 +3,6 @@ services:
     class: Drupal\styleguide\Theme\StyleguideThemeNegotiator
     tags:
       - { name: theme_negotiator, priority: 0 }
+  styleguide.generator:
+    class: Drupal\styleguide\Generator
+    arguments: ['@request_stack']

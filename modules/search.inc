@@ -12,6 +12,7 @@
 function search_styleguide() {
   global $user;
   $items = array();
+  $generator = \Drupal::service('styleguide.generator');
 
   $items['search_block_form'] = array(
     'title' => t('Search block form'),
@@ -28,11 +29,11 @@ function search_styleguide() {
   for ($i = 0; $i < 5; $i++) {
     $node = array(
       'link' => '#',
-      'title' => styleguide_sentence(),
+      'title' => $generator->sentence(),
       'user' => theme('username', array('account' => $user)),
       'date' => time(),
-      'extra' => array(styleguide_word(2)),
-      'snippet' => styleguide_word(25),
+      'extra' => array($generator->words(2)),
+      'snippet' => $generator->words(25),
       'language' => 'und',
     );
     $results[] = $node;
