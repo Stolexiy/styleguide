@@ -6,3 +6,6 @@ services:
   styleguide.generator:
     class: Drupal\styleguide\Generator
     arguments: ['@request_stack']
+  plugin.manager.styleguide:
+    class: Drupal\styleguide\StyleguidePluginManager
+    arguments: ['@container.namespaces', '@cache.default', '@module_handler']
