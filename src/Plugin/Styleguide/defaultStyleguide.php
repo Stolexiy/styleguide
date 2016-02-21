@@ -7,16 +7,21 @@
 
 namespace Drupal\styleguide\Plugin\Styleguide;
 
+use Drupal\Core\Breadcrumb\ChainBreadcrumbBuilderInterface;
+use Drupal\Core\Form\FormBuilder;
 use Drupal\Core\Form\FormState;
 use Drupal\Core\Link;
+use Drupal\Core\Url;
+use Drupal\Core\Menu\MenuLinkTreeInterface;
 use Drupal\Core\Menu\MenuTreeParameters;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Plugin\PluginBase;
 use Drupal\Core\Render\Element;
+use Drupal\Core\Routing\CurrentRouteMatch;
 use Drupal\styleguide\GeneratorInterface;
 use Drupal\styleguide\StyleguideInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\Url;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * @Plugin(
@@ -33,23 +38,88 @@ class defaultStyleguide extends PluginBase implements StyleguideInterface, Conta
   protected $generator;
 
   /**
+   * The request stack.
+   *
+   * @var \Symfony\Component\HttpFoundation\RequestStack
+   */
+  protected $requestStack;
+
+  /**
+   * The menu link tree.
+   *
+   * @var \Drupal\Core\Menu\MenuLinkTreeInterface
+   */
+  protected $linkTree;
+
+  /**
+   * The form builder.
+   *
+   * @var \Drupal\Core\Form\FormBuilder
+   */
+  protected $formBuilder;
+
+  /**
+   * The breadcrumb manager.
+   *
+   * @var \Drupal\Core\Breadcrumb\ChainBreadcrumbBuilderInterface
+   */
+  protected $breadcrumbManager;
+
+  /**
+   * The current_route_match service.
+   *
+   * @var \Drupal\Core\Routing\CurrentRouteMatch
+   */
+  protected $currentRouteMatch;
+
+  /**
+   * Constructs a new defaultStyleguide.
+   *
    * @param array $configuration
    * @param string $plugin_id
    * @param mixed $plugin_definition
    * @param \Drupal\styleguide\GeneratorInterface $styleguide_generator
+   * @param \Symfony\Component\HttpFoundation\RequestStack $request_stack
+   * @param \Drupal\Core\Menu\MenuLinkTreeInterface $link_tree
+   * @param \Drupal\Core\Form\FormBuilder $form_builder
+   * @param \Drupal\Core\Breadcrumb\ChainBreadcrumbBuilderInterface $breadcrumb_manager
+   * @param \Drupal\Core\Routing\CurrentRouteMatch $current_route_match
+   * @internal param \Drupal\Core\Breadcrumb\ChainBreadcrumbBuilderInterface $breadcrumb
    * @internal param \Drupal\styleguide\GeneratorInterface $generator
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, GeneratorInterface $styleguide_generator) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, GeneratorInterface $styleguide_generator, RequestStack $request_stack, MenuLinkTreeInterface $link_tree, FormBuilder $form_builder, ChainBreadcrumbBuilderInterface $breadcrumb_manager, CurrentRouteMatch $current_route_match) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
 
     $this->generator = $styleguide_generator;
+    $this->requestStack = $request_stack;
+    $this->linkTree = $link_tree;
+    $this->formBuilder = $form_builder;
+    $this->breadcrumbManager = $breadcrumb_manager;
+    $this->currentRouteMatch = $current_route_match;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    return new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+      $container->get('styleguide.generator'),
+      $container->get('request_stack'),
+      $container->get('menu.link_tree'),
+      $container->get('form_builder'),
+      $container->get('breadcrumb'),
+      $container->get('current_route_match')
+    );
   }
 
   /**
    * @return array
    */
   public function items() {
-    $current_url = \Drupal::request()->getRequestUri();
+    $current_url = $this->requestStack->getCurrentRequest()->getRequestUri();
     $items['a'] = array(
       'title' => t('Link'),
       'content' => $this->generator->words(3, 'ucfirst') . ' ' . $this->createLink($this->generator->words(3), '/node') . ' ' . $this->generator->words(4) . '.',
@@ -168,10 +238,10 @@ class defaultStyleguide extends PluginBase implements StyleguideInterface, Conta
       'group' => t('Lists'),
     );
 
-    $menu = \Drupal::menuTree()->load('admin', new MenuTreeParameters());
+    $menu = $this->linkTree->load('admin', new MenuTreeParameters());
     $items['menu_tree'] = array(
       'title' => t('Menu tree'),
-      'content' => \Drupal::menuTree()->build($menu),
+      'content' => $this->linkTree->build($menu),
       'group' => t('Menus'),
     );
     $items['menu_link'] = array(
@@ -258,7 +328,7 @@ class defaultStyleguide extends PluginBase implements StyleguideInterface, Conta
     }
 
     // Form elements.
-    $elements = \Drupal::formBuilder()->buildForm('Drupal\styleguide\Form\StyleguideForm', new FormState());
+    $elements = $this->formBuilder->buildForm('Drupal\styleguide\Form\StyleguideForm', new FormState());
     $basic = array();
     $fieldsets = array();
     $tabs = array();
@@ -283,37 +353,37 @@ class defaultStyleguide extends PluginBase implements StyleguideInterface, Conta
     }
     $items['form'] = array(
       'title' => t('Forms, basic'),
-      'content' => \Drupal::formBuilder()->getForm('Drupal\styleguide\Form\StyleguideForm', $basic),
+      'content' => $this->formBuilder->getForm('Drupal\styleguide\Form\StyleguideForm', $basic),
       'group' => t('Forms'),
     );
     $items['form-submit'] = array(
       'title' => t('Forms, submit'),
-      'content' => \Drupal::formBuilder()->getForm('Drupal\styleguide\Form\StyleguideForm', array('submit')),
+      'content' => $this->formBuilder->getForm('Drupal\styleguide\Form\StyleguideForm', array('submit')),
       'group' => t('Forms'),
     );
     $items['form-button'] = array(
       'title' => t('Forms, button'),
-      'content' => \Drupal::formBuilder()->getForm('Drupal\styleguide\Form\StyleguideForm', array('button')),
+      'content' => $this->formBuilder->getForm('Drupal\styleguide\Form\StyleguideForm', array('button')),
       'group' => t('Forms'),
     );
     $items['form-image-button'] = array(
       'title' => t('Forms, image button'),
-      'content' => \Drupal::formBuilder()->getForm('Drupal\styleguide\Form\StyleguideForm', array('image_button')),
+      'content' => $this->formBuilder->getForm('Drupal\styleguide\Form\StyleguideForm', array('image_button')),
       'group' => t('Forms'),
     );
     $items['form-markup'] = array(
       'title' => t('Forms, markup'),
-      'content' => \Drupal::formBuilder()->getForm('Drupal\styleguide\Form\StyleguideForm', $markup),
+      'content' => $this->formBuilder->getForm('Drupal\styleguide\Form\StyleguideForm', $markup),
       'group' => t('Forms'),
     );
     $items['form-fieldsets'] = array(
       'title' => t('Forms, fieldsets'),
-      'content' => \Drupal::formBuilder()->getForm('Drupal\styleguide\Form\StyleguideForm', $fieldsets),
+      'content' => $this->formBuilder->getForm('Drupal\styleguide\Form\StyleguideForm', $fieldsets),
       'group' => t('Forms'),
     );
     $items['form-vertical-tabs'] = array(
       'title' => t('Forms, vertical tabs'),
-      'content' => \Drupal::formBuilder()->getForm('Drupal\styleguide\Form\StyleguideForm', $tabs),
+      'content' => $this->formBuilder->getForm('Drupal\styleguide\Form\StyleguideForm', $tabs),
       'group' => t('Forms'),
     );
     $items['feed_icon'] = array(
@@ -334,7 +404,7 @@ class defaultStyleguide extends PluginBase implements StyleguideInterface, Conta
     );
     $items['confirm_form'] = array(
       'title' => t('Confirm form'),
-      'content' => \Drupal::formBuilder()->getForm('Drupal\styleguide\Form\StyleguideConfirmForm'),
+      'content' => $this->formBuilder->getForm('Drupal\styleguide\Form\StyleguideConfirmForm'),
       'group' => t('System')
     );
     $items['pager'] = array(
@@ -348,9 +418,7 @@ class defaultStyleguide extends PluginBase implements StyleguideInterface, Conta
       'group' => t('User interface')
     );
     // Use alternative item name to avoid conflict with main breadcrumb.
-    $breadcrumb_manager = \Drupal::service('breadcrumb');
-    $current_route_match = \Drupal::service('current_route_match');
-    $breadcrumb = $breadcrumb_manager->build($current_route_match);
+    $breadcrumb = $this->breadcrumbManager->build($this->currentRouteMatch);
     $items['styleguide_breadcrumb'] = array(
       'title' => t('Breadcrumb'),
       'content' => render($breadcrumb),
@@ -419,21 +487,5 @@ class defaultStyleguide extends PluginBase implements StyleguideInterface, Conta
       $el['#' . $key] = $value;
     }
     return render($el);
-  }
-
-  /**
-   * @param \Symfony\Component\DependencyInjection\ContainerInterface $container
-   * @param array $configuration
-   * @param string $plugin_id
-   * @param mixed $plugin_definition
-   * @return static
-   */
-  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-    return new static(
-      $configuration,
-      $plugin_id,
-      $plugin_definition,
-      $container->get('styleguide.generator')
-    );
   }
 }

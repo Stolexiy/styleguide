@@ -8,4 +8,4 @@ styleguide.page:
     _admin_route: FALSE
 
 route_callbacks:
-  - '\Drupal\styleguide\Routing\StyleguideRoutes::routes'
+  - 'styleguide.routes::routes'

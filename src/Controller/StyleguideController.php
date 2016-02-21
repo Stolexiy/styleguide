@@ -10,9 +10,11 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Extension\ThemeHandlerInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Render\Element;
+use Drupal\Core\Theme\ThemeManagerInterface;
 use Drupal\Core\Url;
 use Drupal\styleguide\StyleguidePluginManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 class StyleguideController extends ControllerBase {
 
@@ -31,25 +33,44 @@ class StyleguideController extends ControllerBase {
   protected $generator;
 
   /**
-   * Constructs a new SystemController.
+   * The theme manager service.
+   *
+   * @var \Drupal\Core\Theme\ThemeManagerInterface
+   */
+  protected $themeManager;
+
+  /**
+   * The request stack.
+   *
+   * @var \Symfony\Component\HttpFoundation\RequestStack
+   */
+  protected $requestStack;
+
+  /**
+   * Constructs a new StyleguideController.
    *
    * @param ThemeHandlerInterface $theme_handler
    *   The theme handler.
    * @param \Drupal\styleguide\StyleguidePluginManager $styleguide_manager
+   * @param \Drupal\Core\Theme\ThemeManagerInterface $theme_manager
+   * @param \Symfony\Component\HttpFoundation\RequestStack $request_stack
    */
-  public function __construct(ThemeHandlerInterface $theme_handler, StyleguidePluginManager $styleguide_manager) {
+  public function __construct(ThemeHandlerInterface $theme_handler, StyleguidePluginManager $styleguide_manager, ThemeManagerInterface $theme_manager, RequestStack $request_stack) {
     $this->themeHandler = $theme_handler;
     $this->styleguideManager = $styleguide_manager;
+    $this->themeManager = $theme_manager;
+    $this->requestStack = $request_stack;
   }
 
   /**
-   * @param \Symfony\Component\DependencyInjection\ContainerInterface $container
-   * @return static
+   * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('theme_handler'),
-      $container->get('plugin.manager.styleguide')
+      $container->get('plugin.manager.styleguide'),
+      $container->get('theme.manager'),
+      $container->get('request_stack')
     );
   }
 
@@ -58,7 +79,7 @@ class StyleguideController extends ControllerBase {
    */
   public function page() {
     // Get active theme.
-    $active_theme = \Drupal::theme()->getActiveTheme()->getName();
+    $active_theme = $this->themeManager->getActiveTheme()->getName();
     $themes = $this->themeHandler->rebuildThemeData();
 
     // Get theme data.
@@ -129,7 +150,7 @@ class StyleguideController extends ControllerBase {
         ];
         $content .= render($render_array);
         // Prepare the header link.
-        $uri = \Drupal::request()->getUri();
+        $uri = $this->requestStack->getCurrentRequest()->getUri();
         $url = Url::fromUri($uri, ['fragment' => $key]);
         $link = Link::fromTextAndUrl($item['title'], $url);
         $to_render = $link->toRenderable();
