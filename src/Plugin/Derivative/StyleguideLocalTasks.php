@@ -7,16 +7,56 @@
 namespace Drupal\styleguide\Plugin\Derivative;
 
 use Drupal\Component\Plugin\Derivative\DeriverBase;
+use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Extension\ThemeHandlerInterface;
+use Drupal\Core\Plugin\Discovery\ContainerDeriverInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
-class StyleguideLocalTasks extends DeriverBase {
+class StyleguideLocalTasks extends DeriverBase implements ContainerDeriverInterface {
+
+  /**
+   * The configuration object factory.
+   *
+   * @var \Drupal\Core\Config\ConfigFactoryInterface
+   */
+  protected $configFactory;
+
+  /**
+   * The theme handler.
+   *
+   * @var \Drupal\Core\Extension\ThemeHandlerInterface
+   */
+  protected $themeHandler;
+
+
+  /**
+   * StyleguideLocalTasks constructor.
+   *
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
+   * @param \Drupal\Core\Extension\ThemeHandlerInterface $theme_handler
+   */
+  public function __construct(ConfigFactoryInterface $config_factory, ThemeHandlerInterface $theme_handler) {
+    $this->configFactory = $config_factory;
+    $this->themeHandler = $theme_handler;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, $base_plugin_id) {
+    return new static(
+      $container->get('config.factory'),
+      $container->get('theme_handler')
+    );
+  }
 
   /**
    * @param array $base_plugin_definition
    * @return array
    */
   public function getDerivativeDefinitions($base_plugin_definition) {
-    $default_theme = \Drupal::config('system.theme')->get('default');
-    $themes = \Drupal::service('theme_handler')->rebuildThemeData();
+    $default_theme = $this->configFactory->get('system.theme')->get('default');
+    $themes = $this->themeHandler->rebuildThemeData();
 
     foreach ($themes as &$theme) {
       if (!empty($theme->info['hidden'])) {
