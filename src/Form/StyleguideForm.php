@@ -23,13 +23,6 @@ class StyleguideForm extends FormBase implements ContainerInjectionInterface {
   protected $generator;
 
   /**
-   * {@inheritdoc}
-   */
-  public static function create(ContainerInterface $container) {
-    return new static($container->get('styleguide.generator'));
-  }
-
-  /**
    * Constructs a new StyleguideForm.
    *
    * @param \Drupal\styleguide\Generator $styleguide_generator
@@ -37,6 +30,13 @@ class StyleguideForm extends FormBase implements ContainerInjectionInterface {
    */
   public function __construct(GeneratorInterface $styleguide_generator) {
     $this->generator = $styleguide_generator;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static($container->get('styleguide.generator'));
   }
 
   /**

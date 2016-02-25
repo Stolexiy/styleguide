@@ -1,8 +1,15 @@
 services:
   theme.negotiator.styleguide:
     class: Drupal\styleguide\Theme\StyleguideThemeNegotiator
+    arguments: ['@theme_handler', '@current_route_match']
     tags:
       - { name: theme_negotiator, priority: 0 }
   styleguide.generator:
     class: Drupal\styleguide\Generator
     arguments: ['@request_stack']
+  plugin.manager.styleguide:
+    class: Drupal\styleguide\StyleguidePluginManager
+    arguments: ['@container.namespaces', '@cache.default', '@module_handler']
+  styleguide.routes:
+    class: Drupal\styleguide\StyleguideRoutes
+    arguments: ['@theme_handler']
