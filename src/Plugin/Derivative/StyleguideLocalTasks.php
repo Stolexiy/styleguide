@@ -57,24 +57,22 @@ class StyleguideLocalTasks extends DeriverBase implements ContainerDeriverInterf
   public function getDerivativeDefinitions($base_plugin_definition) {
     $default_theme = $this->configFactory->get('system.theme')->get('default');
     $themes = $this->themeHandler->rebuildThemeData();
+    $weight = 0;
 
     foreach ($themes as &$theme) {
       if (!empty($theme->info['hidden'])) {
         continue;
       }
       if ($theme->status) {
-        $theme_name = $theme->getName();
-        if ($default_theme == $theme_name) {
-          // Create default local task.
-          $this->derivatives['styleguide.page'] = $base_plugin_definition;
-          $this->derivatives['styleguide.page']['title'] = $theme->info['name'];
-          $this->derivatives['styleguide.page']['route_name'] = 'styleguide.page';
-          $this->derivatives['styleguide.page']['base_route'] = 'styleguide.page';
-        } else {
-          $this->derivatives['styleguide.' . $theme_name] = $base_plugin_definition;
-          $this->derivatives['styleguide.' . $theme_name]['title'] = $theme->info['name'];
-          $this->derivatives['styleguide.' . $theme_name]['route_name'] = 'styleguide.' . $theme_name;
-          $this->derivatives['styleguide.' . $theme_name]['base_route'] = 'styleguide.page';
+        $route_name = 'styleguide.' . $theme->getName();
+        $this->derivatives[$route_name] = $base_plugin_definition + array(
+          'title' => $theme->info['name'],
+          'route_name' => $route_name,
+          'parent_id' => 'styleguide.page',
+          'weight' => $weight++,
+        );
+        if ($default_theme == $theme->getName()) {
+          $this->derivatives[$route_name]['route_name'] = 'styleguide.page';
         }
       }
     }
