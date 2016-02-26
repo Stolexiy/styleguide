@@ -10,25 +10,22 @@ namespace Drupal\styleguide\Plugin\Styleguide;
 use Drupal\Core\Breadcrumb\ChainBreadcrumbBuilderInterface;
 use Drupal\Core\Form\FormBuilder;
 use Drupal\Core\Form\FormState;
-use Drupal\Core\Link;
-use Drupal\Core\Url;
 use Drupal\Core\Menu\MenuLinkTreeInterface;
 use Drupal\Core\Menu\MenuTreeParameters;
-use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Drupal\Core\Plugin\PluginBase;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Routing\CurrentRouteMatch;
 use Drupal\styleguide\GeneratorInterface;
-use Drupal\styleguide\StyleguideInterface;
+use Drupal\styleguide\Plugin\StyleguidePluginBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * @Plugin(
  *   id = "default_styleguide",
+ *   name = @Translation("Default Styleguide elements")
  * )
  */
-class defaultStyleguide extends PluginBase implements StyleguideInterface, ContainerFactoryPluginInterface {
+class defaultStyleguide extends StyleguidePluginBase {
 
   /**
    * The styleguide generator service.
@@ -464,28 +461,4 @@ class defaultStyleguide extends PluginBase implements StyleguideInterface, Conta
     return $items;
   }
 
-  /**
-   * @param $text
-   * @param $uri
-   * @return null
-   */
-  public function createLink($text, $uri) {
-    $url = Url::fromUserInput($uri);
-    $link = Link::fromTextAndUrl($text, $url);
-    $to_render = $link->toRenderable();
-    return render($to_render);
-  }
-
-  /**
-   * @param $name
-   * @param array $variables
-   * @return null
-   */
-  public function themeElement($name, $variables = array()) {
-    $el = ['#theme' => $name];
-    foreach ($variables as $key => $value) {
-      $el['#' . $key] = $value;
-    }
-    return render($el);
-  }
 }
