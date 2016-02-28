@@ -8,9 +8,12 @@ namespace Drupal\styleguide\Form;
 
 use Drupal\Core\Form\ConfirmFormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\Url;
 
 class StyleguideConfirmForm extends ConfirmFormBase {
+
+  use StringTranslationTrait;
 
   /**
    * Returns the question to ask the user.
@@ -19,7 +22,7 @@ class StyleguideConfirmForm extends ConfirmFormBase {
    *   The form question. The page title will be set to this value.
    */
   public function getQuestion() {
-    return t('Do you want to complete the action?');
+    return $this->t('Do you want to complete the action?');
   }
 
   /**

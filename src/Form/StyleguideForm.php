@@ -72,51 +72,51 @@ class StyleguideForm extends FormBase implements ContainerInjectionInterface {
     }
     $form['select'] = array(
       '#type' => 'select',
-      '#title' => t('Select'),
+      '#title' => $this->t('Select'),
       '#options' => $options,
       '#description' => $this->generator->sentence(),
     );
     $form['checkbox'] = array(
       '#type' => 'checkbox',
-      '#title' => t('Checkbox'),
+      '#title' => $this->t('Checkbox'),
       '#value' => 1,
       '#default_value' => 1,
       '#description' => $this->generator->sentence(),
     );
     $form['checkboxes'] = array(
       '#type' => 'checkboxes',
-      '#title' => t('Checkboxes'),
+      '#title' => $this->t('Checkboxes'),
       '#options' => $options,
       '#description' => $this->generator->sentence(),
     );
     $form['radios'] = array(
       '#type' => 'radios',
-      '#title' => t('Radios'),
+      '#title' => $this->t('Radios'),
       '#options' => $options,
       '#description' => $this->generator->sentence(),
     );
     $form['textfield'] = array(
       '#type' => 'textfield',
-      '#title' => t('Textfield'),
+      '#title' => $this->t('Textfield'),
       '#default_value' => $this->generator->words(3, 'ucfirst'),
       '#description' => $this->generator->sentence(),
     );
     $form['autocomplete'] = array(
       '#type' => 'textfield',
-      '#title' => t('Autocomplete textfield'),
+      '#title' => $this->t('Autocomplete textfield'),
       '#default_value' => $this->generator->words(),
       '#description' => $this->generator->sentence(),
       '#autocomplete_path' => 'user/autocomplete',
     );
     $form['textfield-machine'] = array(
       '#type' => 'textfield',
-      '#title' => t('Textfield, with machine name'),
+      '#title' => $this->t('Textfield, with machine name'),
       '#default_value' => $this->generator->words(3, 'ucfirst'),
       '#description' => $this->generator->sentence(),
     );
     $form['machine_name'] = array(
       '#type' => 'machine_name',
-      '#title' => t('Machine name'),
+      '#title' => $this->t('Machine name'),
       '#machine_name' => array(
         'exists' => 'styleguide_machine_name_exists',
         'source' => array('textfield-machine'),
@@ -125,57 +125,57 @@ class StyleguideForm extends FormBase implements ContainerInjectionInterface {
     );
     $form['textarea'] = array(
       '#type' => 'textarea',
-      '#title' => t('Textarea'),
+      '#title' => $this->t('Textarea'),
       '#default_value' => $this->generator->paragraphs(),
       '#description' => $this->generator->sentence(),
     );
     $form['date'] = array(
       '#type' => 'date',
-      '#title' => t('Date'),
+      '#title' => $this->t('Date'),
       '#description' => $this->generator->sentence(),
     );
     $form['file'] = array(
       '#type' => 'file',
-      '#title' => t('File'),
+      '#title' => $this->t('File'),
       '#description' => $this->generator->sentence(),
     );
     $form['managed_file'] = array(
       '#type' => 'managed_file',
-      '#title' => t('Managed file'),
+      '#title' => $this->t('Managed file'),
       '#description' => $this->generator->sentence(),
     );
     $form['password'] = array(
       '#type' => 'password',
-      '#title' => t('Password'),
+      '#title' => $this->t('Password'),
       '#default_value' => $this->generator->words(),
       '#description' => $this->generator->sentence(),
     );
     $form['password_confirm'] = array(
       '#type' => 'password_confirm',
-      '#title' => t('Password confirm'),
+      '#title' => $this->t('Password confirm'),
     );
     $form['weight'] = array(
       '#type' => 'weight',
-      '#title' => t('Weight'),
+      '#title' => $this->t('Weight'),
       '#delta' => 10,
       '#description' => $this->generator->sentence(),
     );
     $form['fieldset-collapsed'] = array(
       '#type' => 'fieldset',
-      '#title' => t('Fieldset collapsed'),
+      '#title' => $this->t('Fieldset collapsed'),
       '#collapsible' => TRUE,
       '#collapsed' => TRUE,
       '#description' => $this->generator->sentence(),
     );
     $form['fieldset-collapsible'] = array(
       '#type' => 'fieldset',
-      '#title' => t('Fieldset collapsible'),
+      '#title' => $this->t('Fieldset collapsible'),
       '#collapsible' => TRUE,
       '#description' => $this->generator->sentence(),
     );
     $form['fieldset'] = array(
       '#type' => 'fieldset',
-      '#title' => t('Fieldset'),
+      '#title' => $this->t('Fieldset'),
       '#collapsible' => FALSE,
       '#description' => $this->generator->sentence(),
     );
@@ -196,11 +196,11 @@ class StyleguideForm extends FormBase implements ContainerInjectionInterface {
       $form['vertical_tabs'][$fieldset] = $form[$fieldset];
     }
     $form['markup'] = array(
-      '#markup' => t('<p><em>Markup</em>: Note that markup does not allow titles or descriptions. Use "item" for those options.</p>') . $this->generator->paragraphs(1),
+      '#markup' => $this->t('<p><em>Markup</em>: Note that markup does not allow titles or descriptions. Use "item" for those options.</p>') . $this->generator->paragraphs(1),
     );
     $form['item'] = array(
       '#type' => 'item',
-      '#title' => t('Item'),
+      '#title' => $this->t('Item'),
       '#markup' => $this->generator->paragraphs(1),
       '#description' => $this->generator->sentence(),
     );
@@ -208,15 +208,15 @@ class StyleguideForm extends FormBase implements ContainerInjectionInterface {
       '#type' => 'image_button',
       '#src' => 'core/misc/druplicon.png',
       '#attributes' => array('height' => 40),
-      '#name' => t('Image button'),
+      '#name' => $this->t('Image button'),
     );
     $form['submit'] = array(
       '#type' => 'submit',
-      '#value' => t('Submit'),
+      '#value' => $this->t('Submit'),
     );
     $form['button'] = array(
       '#type' => 'button',
-      '#value' => t('Button'),
+      '#value' => $this->t('Button'),
     );
     if (!empty($form_keys)) {
       $items = array();
