@@ -87,13 +87,10 @@ interface GeneratorInterface {
   public function paragraphs($size = 5);
 
   /**
-   * Provide a default image for display.
-   *
-   * Images should be in the assets directory. The current images are
-   * (c) Ken Rickard and used by permission.
+   * Generate a default image for display.
    *
    * @param $image
-   *   The name of the image. Will be prefixed with 'image-'.
+   *   The name of the image. Will be prefixed with 'styleguide-image-'.
    * @param $type
    *   The file type, (jpg, png, gif). Do not include a dot.
    * @return
