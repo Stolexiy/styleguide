@@ -55,7 +55,11 @@ class Generator implements GeneratorInterface {
    * {@inheritdoc}
    */
   public function words($size = 1, $case = 'strtolower') {
-    $words = $this->lorem(1, $size, 'lower', FALSE, FALSE);
+    $words = [];
+    for ($i = 0; $i < $size; $i++) {
+      $words[] = $this->random->word(rand(4, 12));
+    }
+    $words = implode(' ', $words);
     $functions = array('ucfirst', 'ucwords', 'strtoupper', 'strtolower');
     if (!is_null($case) && function_exists($case) && in_array($case, $functions)) {
       $words = $case($words);
