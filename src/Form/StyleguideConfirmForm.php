@@ -8,12 +8,9 @@ namespace Drupal\styleguide\Form;
 
 use Drupal\Core\Form\ConfirmFormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\Url;
 
 class StyleguideConfirmForm extends ConfirmFormBase {
-
-  use StringTranslationTrait;
 
   /**
    * Returns the question to ask the user.
