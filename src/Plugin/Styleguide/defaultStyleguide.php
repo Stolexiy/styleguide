@@ -122,7 +122,7 @@ class defaultStyleguide extends StyleguidePluginBase {
       'content' => $this->generator->words(3, 'ucfirst') . ' ' . $this->createLink($this->generator->words(3), '/node') . ' ' . $this->generator->words(4) . '.',
     );
     $items['b'] = array(
-      'title' => $this->t('B'),
+      'title' => $this->t('Bold'),
       'content' => $this->generator->words(3, 'ucfirst') . ' <b>' . $this->generator->words(3) . '</b> ' . $this->generator->words(4) . '.',
     );
     $items['del'] = array(
@@ -142,7 +142,7 @@ class defaultStyleguide extends StyleguidePluginBase {
       'content' => $this->generator->words(3, 'ucfirst') . ' <figure>' . $this->generator->words(3) . '</figure> ' . $this->generator->words(4) . '.',
     );
     $items['hr'] = array(
-      'title' => $this->t('hr'),
+      'title' => $this->t('Horizontal rule'),
       'content' => $this->generator->words(3, 'ucfirst') . ' <hr>' . $this->generator->words(3) . '</hr> ' . $this->generator->words(4) . '.',
     );
     $items['i'] = array(
