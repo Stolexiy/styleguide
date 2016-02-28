@@ -22,7 +22,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
 /**
  * @Plugin(
  *   id = "default_styleguide",
- *   name = @Translation("Default Styleguide elements")
+ *   label = @Translation("Default Styleguide elements")
  * )
  */
 class defaultStyleguide extends StyleguidePluginBase {
