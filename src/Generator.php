@@ -8,6 +8,7 @@
 namespace Drupal\styleguide;
 
 use Drupal\Core\Url;
+use Drupal\Component\Utility\Random;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
@@ -25,10 +26,18 @@ class Generator implements GeneratorInterface {
   protected $currentRequest;
 
   /**
+   * The utility class for creating random data.
+   *
+   * @var \Drupal\Component\Utility\Random
+   */
+  protected $random;
+
+  /**
    * Constructor.
    */
   public function __construct(RequestStack $request_stack) {
     $this->currentRequest = $request_stack->getCurrentRequest();
+    $this->random = new Random();
   }
 
   /**
@@ -77,17 +86,7 @@ class Generator implements GeneratorInterface {
    * {@inheritdoc}
    */
   public function lorem($size = 5, $words = 0, $case = 'mixed', $returns = TRUE, $punctuation = TRUE, $array = FALSE) {
-    $text = <<<EOT
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam iaculis, velit gravida convallis tincidunt, felis enim venenatis lorem, nec lobortis nisl urna et mi. Pellentesque ac dictum ante. Fusce dignissim tempor elementum. Ut dignissim convallis eros, viverra luctus lacus consequat ac. Sed feugiat velit sed magna aliquam accumsan. Nam vitae porta tortor. Nam auctor dui a neque iaculis in aliquam erat viverra. Duis orci nunc, lacinia in malesuada et, euismod id turpis. Cras mattis vulputate erat, eget tempor magna egestas eu. Vestibulum sit amet massa est.
-
-Vivamus pretium placerat lorem, in tempor massa convallis sit amet. Aliquam sed quam eget ligula luctus aliquam sed vitae nulla. Aliquam dui dolor, ullamcorper eget rutrum ut, hendrerit ac lorem. Donec magna est, sollicitudin vel ultrices vel, mattis ut odio. Integer vel felis laoreet purus sollicitudin varius sed id ipsum. Suspendisse potenti. Praesent ut justo vitae metus luctus vehicula a et purus. Suspendisse potenti. Sed viverra, quam non hendrerit laoreet, massa odio blandit arcu, ac molestie metus diam eu tortor. Donec erat arcu, ultrices sit amet placerat non, feugiat in arcu. Mauris eros quam, varius eget volutpat vel, tristique sed est. In faucibus feugiat urna sit amet elementum. Integer consequat rhoncus libero, in molestie augue posuere et. Phasellus ac eleifend magna. Proin vulputate dui ac justo pharetra consequat. In vel iaculis ligula.
-
-Cras vestibulum lacus sit amet sem commodo ullamcorper aliquet eros vestibulum. Sed fermentum nulla quis risus suscipit dapibus. Sed vitae velit ut dolor varius semper at id lectus. Aenean quis leo sit amet tellus tempus cursus. Vivamus semper vehicula ante eget semper. In ac ipsum erat. Suspendisse lectus erat, commodo nec fringilla quis, interdum non leo. Vivamus et lectus vitae risus porta sollicitudin luctus eget est. Etiam quis elit vel est suscipit tristique. Nullam fringilla purus ac velit gravida ullamcorper. Praesent porttitor ante non lacus suscipit porta. Nunc fermentum sem et metus aliquam ultricies non sollicitudin nibh. Vestibulum ut ligula dolor, in placerat tortor. Sed nec lacus sed nibh iaculis luctus. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Curabitur rutrum, diam vel tempor commodo, augue nunc viverra risus, in pellentesque neque justo eget dolor. Maecenas quis odio leo, a auctor lorem.
-
-Curabitur dapibus odio quis enim hendrerit eu placerat lorem accumsan. Phasellus sagittis, orci vel laoreet molestie, urna orci imperdiet elit, quis ultricies orci mauris vel ante. Cras pharetra, nisl a sagittis feugiat, turpis magna placerat sem, sed euismod erat elit in magna. Phasellus blandit ullamcorper diam vel porta. Vivamus mollis, metus nec tincidunt venenatis, risus odio sodales risus, vitae ultrices est nisi eget ante. Aenean eget nisi mi. Nulla non nulla nec metus rhoncus congue. Curabitur quis nunc nibh. Cras metus lorem, euismod ornare mattis sagittis, ultrices eget turpis. Integer quis dui tellus. Morbi vel dolor sit amet metus eleifend fringilla. Fusce nunc neque, ultricies et commodo semper, dignissim vitae tortor. Phasellus et ipsum quis sapien accumsan auctor. Morbi congue nulla vel tortor aliquet imperdiet. Morbi eget odio elit, et cursus odio. Quisque a velit diam. Duis urna libero, tempus non mattis a, convallis ac erat. Etiam vel dui posuere lectus auctor viverra vitae id eros. Maecenas mollis eros non elit sollicitudin quis fermentum diam lacinia. Quisque at ante nibh, a molestie ligula.
-
-Sed et enim nunc, nec vehicula sem. Sed risus orci, auctor et dictum at, hendrerit eu augue. Curabitur sed ante non quam fermentum vehicula. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam tincidunt dictum molestie. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Phasellus nec urna ut lorem tempus aliquet eget nec lectus. Phasellus quis venenatis tortor. Integer elementum, sapien at feugiat cursus, tortor sapien adipiscing massa, non molestie elit lacus vel velit. Suspendisse sit amet sem id libero auctor pharetra sit amet ut dui. Aenean sit amet tellus sit amet ante congue faucibus. Nullam hendrerit, justo et iaculis tristique, ligula risus pretium erat, sed tempus lacus felis ut nulla.
-EOT;
+    $text = $this->random->paragraphs($size);
     if (!$punctuation) {
       $text = str_replace(array(',', '.'), '', $text);
     }
@@ -137,19 +136,23 @@ EOT;
   /**
    * {@inheritdoc}
    */
-  public function image($image = 'vertical', $type = 'jpg') {
-    $path = drupal_get_path('module', 'styleguide');
-    $filepath = $path . '/assets/image-' . $image . '.' . $type;
-    if (file_exists($filepath)) {
-      return $filepath;
+  public function image($image = 'vertical', $type = 'jpg', $min_resolution = '240x320', $max_resolution = '240x320') {
+    $file_path = file_default_scheme() . '://styleguide-image-' . $image . '.' . $type;
+
+    if ($image == 'horizontal') {
+      $min_resolution = $max_resolution = '320x240';
     }
+
+    $file_path = $this->random->image($file_path, $min_resolution, $max_resolution);
+
+    return file_exists($file_path) ? $file_path : NULL;
   }
 
   /**
    * {@inheritdoc}
    */
   public function sentence($link = FALSE) {
-    $graph = strip_tags($this->paragraphs());
+    $graph = $this->random->sentences(mt_rand(60, 180));
     $explode = explode('.', $graph);
     $rand = array_rand($explode);
     $sentence = trim($explode[$rand]);

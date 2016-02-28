@@ -94,12 +94,12 @@ class StyleguideController extends ControllerBase {
     $groups = array();
     foreach ($items as $key => $item) {
       if (!isset($item['group'])) {
-        $item['group'] = t('Common');
+        $item['group'] = $this->t('Common');
       }
       else {
-        $item['group'] = t('@group', array('@group' => $item['group']));
+        $item['group'] = $this->t('@group', array('@group' => $item['group']));
       }
-      $item['title'] = t('@title', array('@title' => $item['title']));
+      $item['title'] = $this->t('@title', array('@title' => $item['title']));
       $groups[$item['group']->__toString()][$key] = $item;
     }
 
