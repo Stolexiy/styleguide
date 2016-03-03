@@ -7,6 +7,7 @@
 
 namespace Drupal\styleguide\Plugin\Styleguide;
 
+use Drupal\Core\Block\BlockManager;
 use Drupal\Core\Breadcrumb\ChainBreadcrumbBuilderInterface;
 use Drupal\Core\Form\FormBuilder;
 use Drupal\Core\Form\FormState;
@@ -70,6 +71,13 @@ class defaultStyleguide extends StyleguidePluginBase {
   protected $currentRouteMatch;
 
   /**
+   * The block plugin manager.
+   *
+   * @var \Drupal\Core\Block\BlockManager
+   */
+  protected $blockManager;
+
+  /**
    * Constructs a new defaultStyleguide.
    *
    * @param array $configuration
@@ -84,7 +92,7 @@ class defaultStyleguide extends StyleguidePluginBase {
    * @internal param \Drupal\Core\Breadcrumb\ChainBreadcrumbBuilderInterface $breadcrumb
    * @internal param \Drupal\styleguide\GeneratorInterface $generator
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, GeneratorInterface $styleguide_generator, RequestStack $request_stack, MenuLinkTreeInterface $link_tree, FormBuilder $form_builder, ChainBreadcrumbBuilderInterface $breadcrumb_manager, CurrentRouteMatch $current_route_match) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, GeneratorInterface $styleguide_generator, RequestStack $request_stack, MenuLinkTreeInterface $link_tree, FormBuilder $form_builder, ChainBreadcrumbBuilderInterface $breadcrumb_manager, CurrentRouteMatch $current_route_match, BlockManager $block_manager) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
 
     $this->generator = $styleguide_generator;
@@ -93,6 +101,7 @@ class defaultStyleguide extends StyleguidePluginBase {
     $this->formBuilder = $form_builder;
     $this->breadcrumbManager = $breadcrumb_manager;
     $this->currentRouteMatch = $current_route_match;
+    $this->blockManager = $block_manager;
   }
 
   /**
@@ -108,7 +117,8 @@ class defaultStyleguide extends StyleguidePluginBase {
       $container->get('menu.link_tree'),
       $container->get('form_builder'),
       $container->get('breadcrumb'),
-      $container->get('current_route_match')
+      $container->get('current_route_match'),
+      $container->get('plugin.manager.block')
     );
   }
 
@@ -119,7 +129,11 @@ class defaultStyleguide extends StyleguidePluginBase {
     $current_url = $this->requestStack->getCurrentRequest()->getRequestUri();
     $items['a'] = array(
       'title' => $this->t('Link'),
-      'content' => $this->generator->words(3, 'ucfirst') . ' ' . $this->createLink($this->generator->words(3), '/node') . ' ' . $this->generator->words(4) . '.',
+      'content' => [
+        ['#markup' => $this->generator->words(3, 'ucfirst') . ' '],
+        $this->buildLink($this->generator->words(3), '/node'),
+        ['#markup' => ' ' . $this->generator->words(4) . '.'],
+      ],
     );
     $items['b'] = array(
       'title' => $this->t('Bold'),
@@ -179,61 +193,78 @@ class defaultStyleguide extends StyleguidePluginBase {
     );
     $items['ul'] = array(
       'title' => $this->t('Unordered list'),
-      'theme' => 'item_list',
-      'variables' => array('items' => $this->generator->wordList(), 'list_type' => 'ul'),
+      'content' => [
+        '#theme' => 'item_list',
+        '#items' => $this->generator->wordList(),
+        '#list_type' => 'ul',
+      ],
       'group' => $this->t('Lists'),
     );
     $items['ol'] = array(
       'title' => $this->t('Ordered list'),
-      'theme' => 'item_list',
-      'variables' => array('items' => $this->generator->wordList(), 'list_type' => 'ol'),
+      'content' => [
+        '#theme' => 'item_list',
+        '#items' => $this->generator->wordList(),
+        '#list_type' => 'ol',
+      ],
       'group' => $this->t('Lists'),
     );
     $items['ul_title'] = array(
       'title' => $this->t('Unordered list, with title'),
-      'theme' => 'item_list',
-      'variables' => array('items' => $this->generator->wordList(), 'list_type' => 'ul', 'title' => $this->generator->words(3, 'ucfirst')),
+      'content' => [
+        '#theme' => 'item_list',
+        '#items' => $this->generator->wordList(),
+        '#list_type' => 'ul',
+        '#title' => $this->generator->words(3, 'ucfirst')
+      ],
       'group' => $this->t('Lists'),
     );
     $items['ol_title'] = array(
       'title' => $this->t('Ordered list, with title'),
-      'theme' => 'item_list',
-      'variables' => array('items' => $this->generator->wordList(), 'list_type' => 'ol', 'title' => $this->generator->words(3, 'ucfirst')),
+      'content' => [
+        '#theme' => 'item_list',
+        '#items' => $this->generator->wordList(),
+        '#list_type' => 'ol',
+        '#title' => $this->generator->words(3, 'ucfirst'),
+      ],
       'group' => $this->t('Lists'),
     );
     $items['ul_long'] = array(
       'title' => $this->t('Unordered list with wrapped list items'),
-      'theme' => 'item_list',
-      'variables' => array('items' => $this->generator->wordList(3, 120), 'list_type' => 'ul'),
+      'content' => [
+        '#theme' => 'item_list',
+        '#items' => $this->generator->wordList(3, 120),
+        '#list_type' => 'ul',
+      ],
       'group' => $this->t('Lists'),
     );
     $items['ol_long'] = array(
       'title' => $this->t('Ordered list with wrapped list items'),
-      'theme' => 'item_list',
-      'variables' => array('items' => $this->generator->wordList(3, 120), 'list_type' => 'ol'),
+      'content' => [
+        '#theme' => 'item_list',
+        '#items' => $this->generator->wordList(3, 120),
+        '#list_type' => 'ol',
+      ],
       'group' => $this->t('Lists'),
     );
     $items['ul_links'] = array(
       'title' => $this->t('Unordered list with links'),
-      'theme' => 'links',
-      'variables' => array(
-        'links' => $this->generator->ulLinks(),
-      ),
+      'content' => [
+        '#theme' => 'links',
+        '#links' => $this->generator->ulLinks(),
+      ],
       'group' => $this->t('Lists'),
     );
     $items['ul_links_inline'] = array(
       'title' => $this->t('Unordered inline list with links'),
-      'theme' => 'links',
-      'variables' => array(
-        'links' => $this->generator->ulLinks(),
-        'attributes' => array(
-          'class' => array(
-            'inline',
-          ),
-        ),
-      ),
+      'content' => [
+        '#theme' => 'links',
+        '#links' => $this->generator->ulLinks(),
+        '#attributes' => array('class' => array('inline')),
+      ],
       'group' => $this->t('Lists'),
     );
+//    dpm($items['ul_links_inline']['content']);
 
     $menu = $this->linkTree->load('admin', new MenuTreeParameters());
     $items['menu_tree'] = array(
@@ -248,8 +279,12 @@ class defaultStyleguide extends StyleguidePluginBase {
     );
     $items['table'] = array(
       'title' => $this->t('Table'),
-      'theme' => 'table',
-      'variables' => array('caption' => $this->generator->words(3), 'header' => $this->generator->tableHeader(), 'rows' => $this->generator->tableRows()),
+      'content' => [
+        '#theme' => 'table',
+        '#caption' => $this->generator->words(3),
+        '#header' => $this->generator->tableHeader(),
+        '#rows' => $this->generator->tableRows(),
+      ],
       'group' => $this->t('Tables'),
     );
     $items['text'] = array(
@@ -264,24 +299,50 @@ class defaultStyleguide extends StyleguidePluginBase {
     );
     $items['image-horizontal'] = array(
       'title' => $this->t('Image, horizontal'),
-      'theme' => 'image',
-      'variables' => array('uri' => $this->generator->image('horizontal'), 'alt' => $this->t('My image'), 'title' => $this->t('My image')),
+      'content' => [
+        '#theme' => 'image',
+        '#uri' => $this->generator->image('horizontal'),
+        '#alt' => $this->t('My image'),
+        '#title' => $this->t('My image'),
+      ],
       'group' => $this->t('Media'),
     );
     $items['image-vertical'] = array(
       'title' => $this->t('Image, vertical'),
-      'theme' => 'image',
-      'variables' => array('uri' => $this->generator->image('vertical'), 'alt' => $this->t('My image'), 'title' => $this->t('My image')),
+      'content' => [
+        '#theme' => 'image',
+        '#uri' => $this->generator->image('vertical'),
+        '#alt' => $this->t('My image'),
+        '#title' => $this->t('My image'),
+      ],
       'group' => $this->t('Media'),
     );
     $items['image-inset-horizontal'] = array(
       'title' => $this->t('Image, horizontal, within text'),
-      'content' => $this->generator->paragraphs(1) . $this->themeElement('image', array('uri' => $this->generator->image('horizontal'), 'alt' => $this->t('My image'), 'title' => $this->t('My image'))) . $this->generator->paragraphs(2),
+      'content' => [
+        ['#markup' => $this->generator->paragraphs(1)],
+        [
+          '#theme' => 'image',
+          '#uri' => $this->generator->image('horizontal'),
+          '#alt' => $this->t('My image'),
+          '#title' => $this->t('My image'),
+        ],
+        ['#markup' => $this->generator->paragraphs(2)],
+      ],
       'group' => $this->t('Media'),
     );
     $items['image-inset-vertical'] = array(
       'title' => $this->t('Image, vertical, within text'),
-      'content' => $this->generator->paragraphs(1) . $this->themeElement('image', array('uri' => $this->generator->image('vertical'), 'alt' => $this->t('My image'), 'title' => $this->t('My image'))) . $this->generator->paragraphs(2),
+      'content' => [
+        ['#markup' => $this->generator->paragraphs(1)],
+        [
+          '#theme' => 'image',
+          '#uri' => $this->generator->image('vertical'),
+          '#alt' => $this->t('My image'),
+          '#title' => $this->t('My image'),
+        ],
+        ['#markup' => $this->generator->paragraphs(2)],
+      ],
       'group' => $this->t('Media'),
     );
     $content = '';
@@ -385,18 +446,26 @@ class defaultStyleguide extends StyleguidePluginBase {
     );
     $items['feed_icon'] = array(
       'title' => $this->t('Feed icon'),
-      'content' => $this->themeElement('feed_icon', array('url' => 'rss.xml', 'title' => $this->t('Syndicate'))),
+      'content' => [
+        '#theme' => 'feed_icon',
+        '#url' => 'rss.xml',
+        '#title' => $this->t('Syndicate'),
+      ],
       'group' => $this->t('System')
     );
     // This item kills drupal_set_message. The messages are displayed here.
     $items['maintenance_page'] = array(
       'title' => $this->t('Maintenance page'),
-      'content' => $this->themeElement('maintenance_page', array('title' => $this->generator->sentence(1))),
+      'content' => [
+        '#theme' => 'maintenance_page',
+        '#title' => $this->generator->sentence(1),
+      ],
       'group' => $this->t('System')
     );
+    $plugin = $this->blockManager->createInstance('system_powered_by_block');
     $items['system_powered_by'] = array(
       'title' => $this->t('System powered by'),
-      'content' => $this->themeElement('system_powered_by'),
+      'content' => $plugin->build(),
       'group' => $this->t('System')
     );
     $items['confirm_form'] = array(
@@ -411,44 +480,76 @@ class defaultStyleguide extends StyleguidePluginBase {
     );
     $items['progress_bar'] = array(
       'title' => $this->t('Progress bar'),
-      'content' => $this->themeElement('progress_bar', array('percent' => 57, 'message' => $this->generator->sentence(2))),
+      'content' => [
+        '#theme' => 'progress_bar',
+        '#percent' => 57,
+        '#message' => $this->generator->sentence(2),
+      ],
       'group' => $this->t('User interface')
     );
     // Use alternative item name to avoid conflict with main breadcrumb.
     $breadcrumb = $this->breadcrumbManager->build($this->currentRouteMatch);
     $items['styleguide_breadcrumb'] = array(
       'title' => $this->t('Breadcrumb'),
-      'content' => render($breadcrumb),
+      'content' => $breadcrumb->toRenderable(),
       'group' => $this->t('User interface')
     );
     $items['link'] = array(
       'title' => $this->t('Link'),
-      'content' => $this->createLink($this->generator->words(2), $current_url),
+      'content' => $this->buildLink($this->generator->words(2), $current_url),
       'group' => $this->t('Link')
     );
     $items['links'] = array(
       'title' => $this->t('Links'),
-      'content' => $this->themeElement('links', array('links' => $this->generator->links($current_url))),
+      'content' => [
+        '#theme' => 'links',
+        '#links' => $this->generator->links($current_url),
+      ],
       'group' => $this->t('Link')
     );
     $items['mark_new'] = array(
       'title' => $this->t('Mark, new'),
-      'content' => $this->createLink($this->generator->sentence(), $current_url) . $this->themeElement('mark', array('type' => MARK_NEW)),
+      'content' => [
+        [$this->buildLink($this->generator->sentence(), $current_url)],
+        [
+          '#theme' => 'mark',
+          '#type' => MARK_NEW,
+        ],
+      ],
       'group' => $this->t('Link')
     );
     $items['mark_updated'] = array(
       'title' => $this->t('Mark, updated'),
-      'content' => $this->createLink($this->generator->sentence(), $current_url) . $this->themeElement('mark', array('type' => MARK_UPDATED)),
+      'content' => [
+        [$this->buildLink($this->generator->sentence(), $current_url)],
+        [
+          '#theme' => 'mark',
+          '#type' => MARK_UPDATED,
+        ],
+      ],
       'group' => $this->t('Link')
     );
     $items['more_help_link'] = array(
       'title' => $this->t('More help link'),
-      'content' => $this->generator->paragraphs(1) . $this->themeElement('more_help_link', array('url' => $current_url)),
+      'content' => [
+        ['#markup' => $this->generator->paragraphs(1)],
+        [
+          '#theme' => 'more_help_link',
+          '#url' => $current_url,
+        ],
+      ],
       'group' => $this->t('Link')
     );
     $items['more_link'] = array(
       'title' => $this->t('More link'),
-      'content' => $this->generator->paragraphs(1) . $this->themeElement('more_link', array('url' => $current_url, 'title' => $this->generator->sentence())),
+      'content' => [
+        ['#markup' => $this->generator->paragraphs(1)],
+        [
+          '#theme' => 'more_link',
+          '#url' => $current_url,
+          '#title' => $this->generator->sentence(),
+        ],
+      ],
       'group' => $this->t('Link')
     );
     $items['monospace'] = array(

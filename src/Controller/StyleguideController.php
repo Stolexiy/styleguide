@@ -47,6 +47,13 @@ class StyleguideController extends ControllerBase {
   protected $requestStack;
 
   /**
+   * The block plugin manager.
+   *
+   * @var \Drupal\styleguide\StyleguidePluginManager
+   */
+  protected $styleguideManager;
+
+  /**
    * Constructs a new StyleguideController.
    *
    * @param ThemeHandlerInterface $theme_handler
@@ -105,24 +112,13 @@ class StyleguideController extends ControllerBase {
 
     ksort($groups);
     // Create a navigation header.
-    $header = array();
-    $head = '';
-    $content = '';
+    $header = $head = $content = array();
     // Process the elements, by group.
     foreach ($groups as $group => $elements) {
       foreach ($elements as $key => $item) {
-        $display = '';
-        // Output a standard theme item.
-
-        if (isset($item['theme'])) {
-          $el = ['#theme' => $item['theme']];
-          foreach ($item['variables'] as $param => $value) {
-            $el['#' . $param] = $value;
-          }
-          $display = render($el);
-        }
+        $display = array();
         // Output a standard HTML tag.
-        elseif (isset($item['tag']) && isset($item['content'])) {
+        if (isset($item['tag']) && isset($item['content'])) {
           $tag = [
             '#type' => 'html_tag',
             '#tag' => $item['tag'],
@@ -131,37 +127,34 @@ class StyleguideController extends ControllerBase {
           if (!empty($item['attributes'])) {
             $tag['#attributes'] = $item['attributes'];
           }
-          $display = render($tag);
+          $display[] = $tag;
         }
         // Support a renderable array for content.
         elseif (isset($item['content']) && is_array($item['content'])) {
-          $display = render($item['content']);
+          $display[] = $item['content'];
         }
         // Just print the provided content.
         elseif (isset($item['content'])) {
-          $display = $item['content'];
+          $display[] = ['#markup' => $item['content']];
         }
         // Add the content.
-        $render_array = [
+        $content[] = [
           '#theme' => 'styleguide_item',
           '#key' => $key,
           '#item' => $item,
           '#content' => $display,
         ];
-        $content .= render($render_array);
         // Prepare the header link.
         $uri = $this->requestStack->getCurrentRequest()->getUri();
         $url = Url::fromUri($uri, ['fragment' => $key]);
         $link = Link::fromTextAndUrl($item['title'], $url);
-        $to_render = $link->toRenderable();
-        $header[$group][] = render($to_render);
+        $header[$group][] = $link->toRenderable();
       }
-      $item_list = [
+      $head[] = [
         '#theme' => 'item_list',
         '#items' => $header[$group],
         '#title' => $group,
       ];
-      $head .= render($item_list);
     }
 
     return [

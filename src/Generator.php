@@ -182,8 +182,7 @@ class Generator implements GeneratorInterface {
    */
   public function pager($size = 8, $total = 20) {
     pager_default_initialize($total, $size);
-    $pager = ['#type' => 'pager'];
-    return render($pager);
+    return ['#type' => 'pager'];
   }
 
   /**
@@ -194,7 +193,7 @@ class Generator implements GeneratorInterface {
     for ($i = 0; $i < 5; $i++) {
       $links[] = array(
         'title' => $this->words(3),
-        'href' => $url,
+        'url' => Url::fromUserInput($url),
       );
     }
     return $links;

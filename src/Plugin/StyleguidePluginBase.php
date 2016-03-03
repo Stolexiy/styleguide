@@ -19,7 +19,7 @@ use Drupal\Core\Url;
 abstract class StyleguidePluginBase extends PluginBase implements StyleguideInterface, ContainerFactoryPluginInterface {
 
   /**
-   * Render a link.
+   * Build a link.
    *
    * @param string $text
    *   Text displayed in the link.
@@ -28,31 +28,10 @@ abstract class StyleguidePluginBase extends PluginBase implements StyleguideInte
    * @return string
    *  The rendered link.
    */
-  public function createLink($text, $uri) {
+  public function buildLink($text, $uri) {
     $url = Url::fromUserInput($uri);
     $link = Link::fromTextAndUrl($text, $url);
-    $to_render = $link->toRenderable();
-
-    return render($to_render);
-  }
-
-  /**
-   * Render an element.
-   *
-   * @param string $name
-   *  Name of element to render.
-   * @param array $variables
-   *  Element variables.
-   * @return string
-   *  The rendered element.
-   */
-  public function themeElement($name, $variables = array()) {
-    $el = ['#theme' => $name];
-    foreach ($variables as $key => $value) {
-      $el['#' . $key] = $value;
-    }
-
-    return render($el);
+    return $link->toRenderable();
   }
 
 }
