@@ -79,12 +79,14 @@ interface GeneratorInterface {
   /**
    * Generate paragraph(s) of random text.
    *
-   * @param $size
+   * @param int $size
    *   The number of paragraphs to return.
-   * @return
-   *   HTML paragraphs.
+   * @param bool $render
+   *   Allow to choose render the paragraph or return renderable array.
+   * @return  array|string HTML paragraphs.
+   *   Renderable array or string of HTML paragraphs.
    */
-  public function paragraphs($size = 5);
+  public function paragraphs($size = 5, $render = FALSE);
 
   /**
    * Generate a default image for display.

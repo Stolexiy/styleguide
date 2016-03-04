@@ -90,7 +90,7 @@ class Generator implements GeneratorInterface {
    * {@inheritdoc}
    */
   public function lorem($size = 5, $words = 0, $case = 'mixed', $returns = TRUE, $punctuation = TRUE, $array = FALSE) {
-    $text = $this->random->paragraphs($size);
+    $text = $this->random->paragraphs($size, TRUE);
     if (!$punctuation) {
       $text = str_replace(array(',', '.'), '', $text);
     }
@@ -128,13 +128,18 @@ class Generator implements GeneratorInterface {
   /**
    * {@inheritdoc}
    */
-  public function paragraphs($size = 5) {
+  public function paragraphs($size = 5, $render = FALSE) {
     $text = $this->lorem($size, 0, 'mixed', TRUE, TRUE, TRUE);
-    $output = '';
+    $output = array();
     foreach ($text as $item) {
-      $output .= '<p>' . trim($item) . '</p>';
+      $output[] = [
+        '#type' => 'html_tag',
+        '#tag' => 'p',
+        '#value' => trim($item),
+      ];
     }
-    return $output;
+
+    return $render ? render($output) : $output;
   }
 
   /**

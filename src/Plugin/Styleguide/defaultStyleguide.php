@@ -130,66 +130,182 @@ class defaultStyleguide extends StyleguidePluginBase {
     $items['a'] = array(
       'title' => $this->t('Link'),
       'content' => [
-        ['#markup' => $this->generator->words(3, 'ucfirst') . ' '],
-        $this->buildLink($this->generator->words(3), '/node'),
-        ['#markup' => ' ' . $this->generator->words(4) . '.'],
+        '#type' => 'inline_template',
+        '#template' => '{{ pre }} {{ link }} {{ post }}.',
+        '#context' => [
+          'pre' => $this->generator->words(3, 'ucfirst'),
+          'link' => $this->buildLink($this->generator->words(3), '/node'),
+          'post' => $this->generator->words(4),
+        ],
       ],
     );
     $items['b'] = array(
       'title' => $this->t('Bold'),
-      'content' => $this->generator->words(3, 'ucfirst') . ' <b>' . $this->generator->words(3) . '</b> ' . $this->generator->words(4) . '.',
+      'content' => [
+        '#type' => 'inline_template',
+        '#template' => '{{ pre }} <b>{{ bold }}</b> {{ post }}.',
+        '#context' => [
+          'pre' => $this->generator->words(3, 'ucfirst'),
+          'bold' => $this->generator->words(3),
+          'post' => $this->generator->words(4),
+        ],
+      ],
     );
     $items['del'] = array(
       'title' => $this->t('Delete'),
-      'content' => $this->generator->words(3, 'ucfirst') . ' <del>' . $this->generator->words(3) . '</del> ' . $this->generator->words(4) . '.',
+      'content' => [
+        '#type' => 'inline_template',
+        '#template' => '{{ pre }} <del>{{ del }}</del> {{ post }}.',
+        '#context' => [
+          'pre' => $this->generator->words(3, 'ucfirst'),
+          'del' => $this->generator->words(3),
+          'post' => $this->generator->words(4),
+        ],
+      ],
     );
     $items['em'] = array(
       'title' => $this->t('Emphasis'),
-      'content' => $this->generator->words(3, 'ucfirst') . ' <em>' . $this->generator->words(3) . '</em> ' . $this->generator->words(4) . '.',
+      'content' => [
+        '#type' => 'inline_template',
+        '#template' => '{{ pre }} <em>{{ em }}</em> {{ post }}.',
+        '#context' => [
+          'pre' => $this->generator->words(3, 'ucfirst'),
+          'em' => $this->generator->words(3),
+          'post' => $this->generator->words(4),
+        ],
+      ],
     );
     $items['figcaption'] = array(
       'title' => $this->t('Figcaption'),
-      'content' => $this->generator->words(3, 'ucfirst') . ' <figcaption>' . $this->generator->words(3) . '</figcaption> ' . $this->generator->words(4) . '.',
+      'content' => [
+        '#type' => 'inline_template',
+        '#template' => '{{ pre }} <figcaption>{{ figcaption }}</figcaption> {{ post }}.',
+        '#context' => [
+          'pre' => $this->generator->words(3, 'ucfirst'),
+          'figcaption' => $this->generator->words(3),
+          'post' => $this->generator->words(4),
+        ],
+      ],
     );
     $items['figure'] = array(
       'title' => $this->t('Figure'),
-      'content' => $this->generator->words(3, 'ucfirst') . ' <figure>' . $this->generator->words(3) . '</figure> ' . $this->generator->words(4) . '.',
+      'content' => [
+        '#type' => 'inline_template',
+        '#template' => '{{ pre }} <figure>{{ figure }}</figure> {{ post }}.',
+        '#context' => [
+          'pre' => $this->generator->words(3, 'ucfirst'),
+          'figure' => $this->generator->words(3),
+          'post' => $this->generator->words(4),
+        ],
+      ],
     );
     $items['hr'] = array(
       'title' => $this->t('Horizontal rule'),
-      'content' => $this->generator->words(3, 'ucfirst') . ' <hr>' . $this->generator->words(3) . '</hr> ' . $this->generator->words(4) . '.',
+      'content' => [
+        '#type' => 'inline_template',
+        '#template' => '{{ pre }} <hr>{{ hr }}</hr> {{ post }}.',
+        '#context' => [
+          'pre' => $this->generator->words(3, 'ucfirst'),
+          'hr' => $this->generator->words(3),
+          'post' => $this->generator->words(4),
+        ],
+      ],
     );
     $items['i'] = array(
       'title' => $this->t('Italic'),
-      'content' => $this->generator->words(3, 'ucfirst') . ' <i>' . $this->generator->words(3) . '</i> ' . $this->generator->words(4) . '.',
+      'content' => [
+        '#type' => 'inline_template',
+        '#template' => '{{ pre }} <i>{{ i }}</i> {{ post }}.',
+        '#context' => [
+          'pre' => $this->generator->words(3, 'ucfirst'),
+          'i' => $this->generator->words(3),
+          'post' => $this->generator->words(4),
+        ],
+      ],
     );
     $items['q'] = array(
       'title' => $this->t('Quote'),
-      'content' => $this->generator->words(3, 'ucfirst') . ' <q>' . $this->generator->words(3) . '</q> ' . $this->generator->words(4) . '.',
+      'content' => [
+        '#type' => 'inline_template',
+        '#template' => '{{ pre }} <q>{{ q }}</q> {{ post }}.',
+        '#context' => [
+          'pre' => $this->generator->words(3, 'ucfirst'),
+          'q' => $this->generator->words(3),
+          'post' => $this->generator->words(4),
+        ],
+      ],
     );
     $items['s'] = array(
       'title' => $this->t('Strikethrough'),
-      'content' => $this->generator->words(3, 'ucfirst') . ' <s>' . $this->generator->words(3) . '</s> ' . $this->generator->words(4) . '.',
+      'content' => [
+        '#type' => 'inline_template',
+        '#template' => '{{ pre }} <s>{{ s }}</s> {{ post }}.',
+        '#context' => [
+          'pre' => $this->generator->words(3, 'ucfirst'),
+          's' => $this->generator->words(3),
+          'post' => $this->generator->words(4),
+        ],
+      ],
     );
     $items['small'] = array(
       'title' => $this->t('Small'),
-      'content' => $this->generator->words(3, 'ucfirst') . ' <small>' . $this->generator->words(3) . '</small> ' . $this->generator->words(4) . '.',
+      'content' => [
+        '#type' => 'inline_template',
+        '#template' => '{{ pre }} <small>{{ small }}</small> {{ post }}.',
+        '#context' => [
+          'pre' => $this->generator->words(3, 'ucfirst'),
+          'small' => $this->generator->words(3),
+          'post' => $this->generator->words(4),
+        ],
+      ],
     );
     $items['strong'] = array(
       'title' => $this->t('Strong'),
-      'content' => $this->generator->words(3, 'ucfirst') . ' <strong>' . $this->generator->words(3) . '</strong> ' . $this->generator->words(4) . '.',
+      'content' => [
+        '#type' => 'inline_template',
+        '#template' => '{{ pre }} <strong>{{ strong }}</strong> {{ post }}.',
+        '#context' => [
+          'pre' => $this->generator->words(3, 'ucfirst'),
+          'strong' => $this->generator->words(3),
+          'post' => $this->generator->words(4),
+        ],
+      ],
     );
     $items['sub'] = array(
       'title' => $this->t('Subscript'),
-      'content' => $this->generator->words(3, 'ucfirst') . ' <sub>' . $this->generator->words(1) . '</sub> ' . $this->generator->words(4) . '.',
+      'content' => [
+        '#type' => 'inline_template',
+        '#template' => '{{ pre }} <sub>{{ sub }}</sub> {{ post }}.',
+        '#context' => [
+          'pre' => $this->generator->words(3, 'ucfirst'),
+          'sub' => $this->generator->words(1),
+          'post' => $this->generator->words(4),
+        ],
+      ],
     );
     $items['sup'] = array(
       'title' => $this->t('Superscript'),
-      'content' => $this->generator->words(3, 'ucfirst') . ' <sup>' . $this->generator->words(1) . '</sup> ' . $this->generator->words(4) . '.',
+      'content' => [
+        '#type' => 'inline_template',
+        '#template' => '{{ pre }} <sup>{{ sup }}</sup> {{ post }}.',
+        '#context' => [
+          'pre' => $this->generator->words(3, 'ucfirst'),
+          'sup' => $this->generator->words(1),
+          'post' => $this->generator->words(4),
+        ],
+      ],
     );
     $items['u'] = array(
       'title' => $this->t('Underline'),
-      'content' => $this->generator->words(3, 'ucfirst') . ' <u>' . $this->generator->words(3) . '</u> ' . $this->generator->words(4) . '.',
+      'content' => [
+        '#type' => 'inline_template',
+        '#template' => '{{ pre }} <u>{{ u }}</u> {{ post }}.',
+        '#context' => [
+          'pre' => $this->generator->words(3, 'ucfirst'),
+          'u' => $this->generator->words(3),
+          'post' => $this->generator->words(4),
+        ],
+      ],
     );
     $items['ul'] = array(
       'title' => $this->t('Unordered list'),
@@ -264,7 +380,6 @@ class defaultStyleguide extends StyleguidePluginBase {
       ],
       'group' => $this->t('Lists'),
     );
-//    dpm($items['ul_links_inline']['content']);
 
     $menu = $this->linkTree->load('admin', new MenuTreeParameters());
     $items['menu_tree'] = array(
@@ -294,7 +409,15 @@ class defaultStyleguide extends StyleguidePluginBase {
     );
     $items['blockquote'] = array(
       'title' => $this->t('Blockquote'),
-      'content' => $this->generator->paragraphs(1) . '<blockquote>' . $this->generator->paragraphs(1) . '</blockquote>' . $this->generator->paragraphs(1),
+      'content' => [
+        '#type' => 'inline_template',
+        '#template' => '{{ pre }}<blockquote>{{ blockquote }}</blockquote>{{ post }}',
+        '#context' => [
+          'pre' => $this->generator->paragraphs(1),
+          'blockquote' => $this->generator->paragraphs(1),
+          'post' => $this->generator->paragraphs(1),
+        ],
+      ],
       'group' => $this->t('Text'),
     );
     $items['image-horizontal'] = array(
@@ -320,43 +443,58 @@ class defaultStyleguide extends StyleguidePluginBase {
     $items['image-inset-horizontal'] = array(
       'title' => $this->t('Image, horizontal, within text'),
       'content' => [
-        ['#markup' => $this->generator->paragraphs(1)],
+        [$this->generator->paragraphs(1)],
         [
           '#theme' => 'image',
           '#uri' => $this->generator->image('horizontal'),
           '#alt' => $this->t('My image'),
           '#title' => $this->t('My image'),
         ],
-        ['#markup' => $this->generator->paragraphs(2)],
+        [$this->generator->paragraphs(2)],
       ],
       'group' => $this->t('Media'),
     );
     $items['image-inset-vertical'] = array(
       'title' => $this->t('Image, vertical, within text'),
       'content' => [
-        ['#markup' => $this->generator->paragraphs(1)],
+        [$this->generator->paragraphs(1)],
         [
           '#theme' => 'image',
           '#uri' => $this->generator->image('vertical'),
           '#alt' => $this->t('My image'),
           '#title' => $this->t('My image'),
         ],
-        ['#markup' => $this->generator->paragraphs(2)],
+        [$this->generator->paragraphs(2)],
       ],
       'group' => $this->t('Media'),
     );
-    $content = '';
+    $content = array();
     for ($i = 1; $i <=6; $i++) {
-      $content .= "<h$i>" . "h$i: " . implode(' ', $this->generator->wordList()) . "</h$i>";
+      $content[] = [
+        '#type' => 'inline_template',
+        '#template' => '<h{{ i }}>h{{ i }}: {{ wordList }}</h{{ i }}>',
+        '#context' => [
+          'i' => $i,
+          'wordList' => implode(' ', $this->generator->wordList()),
+        ],
+      ];
     }
     $items['headings'] = array(
       'title' => "Headings",
       'content' => $content,
       'group' => $this->t('Text'),
     );
-    $content = '';
+    $content = array();
     for ($i = 1; $i <=6; $i++) {
-      $content .= "<h$i>" . "h$i: " . implode(' ', $this->generator->wordList()) . "</h$i>" . $this->generator->paragraphs(1);
+      $content[] = [
+        '#type' => 'inline_template',
+        '#template' => '<h{{ i }}>h{{ i }}: {{ wordList }}</h{{ i }}>{{ paragraph }}',
+        '#context' => [
+          'i' => $i,
+          'wordList' => implode(' ', $this->generator->wordList()),
+          'paragraph' => $this->generator->paragraphs(1),
+        ],
+      ];
     }
     $items['headings_text'] = array(
       'title' => "Headings with text",
@@ -532,7 +670,7 @@ class defaultStyleguide extends StyleguidePluginBase {
     $items['more_help_link'] = array(
       'title' => $this->t('More help link'),
       'content' => [
-        ['#markup' => $this->generator->paragraphs(1)],
+        [$this->generator->paragraphs(1)],
         [
           '#theme' => 'more_help_link',
           '#url' => $current_url,
@@ -543,7 +681,7 @@ class defaultStyleguide extends StyleguidePluginBase {
     $items['more_link'] = array(
       'title' => $this->t('More link'),
       'content' => [
-        ['#markup' => $this->generator->paragraphs(1)],
+        [$this->generator->paragraphs(1)],
         [
           '#theme' => 'more_link',
           '#url' => $current_url,

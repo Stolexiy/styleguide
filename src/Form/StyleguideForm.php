@@ -126,7 +126,7 @@ class StyleguideForm extends FormBase implements ContainerInjectionInterface {
     $form['textarea'] = array(
       '#type' => 'textarea',
       '#title' => $this->t('Textarea'),
-      '#default_value' => $this->generator->paragraphs(),
+      '#default_value' => $this->generator->paragraphs(5, TRUE),
       '#description' => $this->generator->sentence(),
     );
     $form['date'] = array(
@@ -196,12 +196,12 @@ class StyleguideForm extends FormBase implements ContainerInjectionInterface {
       $form['vertical_tabs'][$fieldset] = $form[$fieldset];
     }
     $form['markup'] = array(
-      '#markup' => $this->t('<p><em>Markup</em>: Note that markup does not allow titles or descriptions. Use "item" for those options.</p>') . $this->generator->paragraphs(1),
+      '#markup' => $this->t('<p><em>Markup</em>: Note that markup does not allow titles or descriptions. Use "item" for those options.</p>') . $this->generator->paragraphs(1, TRUE),
     );
     $form['item'] = array(
       '#type' => 'item',
       '#title' => $this->t('Item'),
-      '#markup' => $this->generator->paragraphs(1),
+      '#markup' => $this->generator->paragraphs(1, TRUE),
       '#description' => $this->generator->sentence(),
     );
     $form['image_button'] = array(
