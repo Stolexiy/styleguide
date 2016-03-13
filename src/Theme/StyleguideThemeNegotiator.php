@@ -75,7 +75,8 @@ class StyleguideThemeNegotiator implements ThemeNegotiatorInterface, ContainerIn
         continue;
       }
       if ($theme->status) {
-        if ($this->currentRouteMatch->getRouteName() == 'styleguide.' . $theme->getName()) {
+        $route_name = $this->currentRouteMatch->getRouteName();
+        if ($route_name == 'styleguide.' . $theme->getName() || $route_name == 'styleguide.maintenance_page.' . $theme->getName()) {
           $this->themeName = $theme->getName();
           return TRUE;
         }

@@ -7,5 +7,14 @@ styleguide.page:
   options:
     _admin_route: FALSE
 
+styleguide.maintenance_page:
+  path: /admin/appearance/styleguide/maintenance-page
+  defaults:
+    _controller: Drupal\styleguide\Controller\StyleguideMaintenancePageController::page
+  requirements:
+    _permission: 'access content'
+  options:
+    _admin_route: FALSE
+
 route_callbacks:
   - 'styleguide.routes::routes'

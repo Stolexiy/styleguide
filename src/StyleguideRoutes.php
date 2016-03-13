@@ -62,6 +62,19 @@ class StyleguideRoutes implements ContainerInjectionInterface {
             '_admin_route' => FALSE,
           )
         );
+        $routes['styleguide.maintenance_page.' . $name] = new Route(
+          '/admin/appearance/styleguide/maintenance-page/' . $name,
+          array(
+            '_controller' => 'Drupal\styleguide\Controller\StyleguideMaintenancePageController::page',
+            '_title' => $theme->info['name'],
+          ),
+          array(
+            '_permission'  => 'access content',
+          ),
+          array(
+            '_admin_route' => FALSE,
+          )
+        );
       }
     }
 

@@ -15,6 +15,7 @@ use Drupal\Core\Menu\MenuLinkTreeInterface;
 use Drupal\Core\Menu\MenuTreeParameters;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Routing\CurrentRouteMatch;
+use Drupal\Core\Theme\ThemeManagerInterface;
 use Drupal\styleguide\GeneratorInterface;
 use Drupal\styleguide\Plugin\StyleguidePluginBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -78,6 +79,13 @@ class defaultStyleguide extends StyleguidePluginBase {
   protected $blockManager;
 
   /**
+   * The theme manager service.
+   *
+   * @var \Drupal\Core\Theme\ThemeManagerInterface
+   */
+  protected $themeManager;
+
+  /**
    * Constructs a new defaultStyleguide.
    *
    * @param array $configuration
@@ -89,10 +97,12 @@ class defaultStyleguide extends StyleguidePluginBase {
    * @param \Drupal\Core\Form\FormBuilder $form_builder
    * @param \Drupal\Core\Breadcrumb\ChainBreadcrumbBuilderInterface $breadcrumb_manager
    * @param \Drupal\Core\Routing\CurrentRouteMatch $current_route_match
+   * @param BlockManager $block_manager
+   * @param ThemeManagerInterface $theme_manager
    * @internal param \Drupal\Core\Breadcrumb\ChainBreadcrumbBuilderInterface $breadcrumb
    * @internal param \Drupal\styleguide\GeneratorInterface $generator
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, GeneratorInterface $styleguide_generator, RequestStack $request_stack, MenuLinkTreeInterface $link_tree, FormBuilder $form_builder, ChainBreadcrumbBuilderInterface $breadcrumb_manager, CurrentRouteMatch $current_route_match, BlockManager $block_manager) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, GeneratorInterface $styleguide_generator, RequestStack $request_stack, MenuLinkTreeInterface $link_tree, FormBuilder $form_builder, ChainBreadcrumbBuilderInterface $breadcrumb_manager, CurrentRouteMatch $current_route_match, BlockManager $block_manager, ThemeManagerInterface $theme_manager) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
 
     $this->generator = $styleguide_generator;
@@ -102,6 +112,7 @@ class defaultStyleguide extends StyleguidePluginBase {
     $this->breadcrumbManager = $breadcrumb_manager;
     $this->currentRouteMatch = $current_route_match;
     $this->blockManager = $block_manager;
+    $this->themeManager = $theme_manager;
   }
 
   /**
@@ -118,7 +129,8 @@ class defaultStyleguide extends StyleguidePluginBase {
       $container->get('form_builder'),
       $container->get('breadcrumb'),
       $container->get('current_route_match'),
-      $container->get('plugin.manager.block')
+      $container->get('plugin.manager.block'),
+      $container->get('theme.manager')
     );
   }
 
@@ -591,13 +603,15 @@ class defaultStyleguide extends StyleguidePluginBase {
       ],
       'group' => $this->t('System')
     );
-    // This item kills drupal_set_message. The messages are displayed here.
+    // Builds a link to the Styleguide maintenance page.
+    $route_name = 'styleguide.maintenance_page.' . $this->themeManager->getActiveTheme()->getName();
     $items['maintenance_page'] = array(
       'title' => $this->t('Maintenance page'),
-      'content' => [
-        '#theme' => 'maintenance_page',
-        '#title' => $this->generator->sentence(1),
-      ],
+      'content' => $this->buildLinkFromRoute($this->t('Open the maintenance page'), $route_name, array(), array(
+        'attributes' => array(
+          'target' => array('_blank'),
+        ),
+      )),
       'group' => $this->t('System')
     );
     $plugin = $this->blockManager->createInstance('system_powered_by_block');
