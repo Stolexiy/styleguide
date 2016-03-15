@@ -543,14 +543,14 @@ class defaultStyleguide extends StyleguidePluginBase {
     $tabs = array();
     $markup = array();
     foreach (Element::children($elements) as $key) {
-      if (!isset($elements[$key]['#type']) || $elements[$key]['#type'] == 'item') {
+      if ($key == 'vertical_tabs' && !in_array($key, $tabs)) {
+        $tabs[] = $key;
+      }
+      elseif (!isset($elements[$key]['#type']) || $elements[$key]['#type'] == 'item') {
         $markup[] = $key;
       }
       elseif ($elements[$key]['#type'] == 'fieldset') {
         $fieldsets[] = $key;
-      }
-      elseif ($key == 'vertical_tabs') {
-        $tabs[] = $key;
       }
       // We skip these.
       elseif (in_array($elements[$key]['#type'], array('button', 'submit', 'image_button'))) {

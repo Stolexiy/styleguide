@@ -189,11 +189,14 @@ class StyleguideForm extends FormBase implements ContainerInjectionInterface {
         }
       }
     }
-    $form['vertical_tabs'] = array(
+    $form['vertical_tabs']['fieldsets'] = array(
       '#type' => 'vertical_tabs',
+      '#default_tab' => 'fieldset',
     );
     foreach ($fieldsets as $fieldset) {
       $form['vertical_tabs'][$fieldset] = $form[$fieldset];
+      $form['vertical_tabs'][$fieldset]['#type'] = 'details';
+      $form['vertical_tabs'][$fieldset]['#group'] = 'fieldsets';
     }
     $form['markup'] = array(
       '#markup' => $this->t('<p><em>Markup</em>: Note that markup does not allow titles or descriptions. Use "item" for those options.</p>') . $this->generator->paragraphs(1, TRUE),
