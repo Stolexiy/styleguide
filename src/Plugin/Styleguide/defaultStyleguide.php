@@ -16,6 +16,7 @@ use Drupal\Core\Menu\MenuTreeParameters;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Routing\CurrentRouteMatch;
 use Drupal\Core\Theme\ThemeManagerInterface;
+use Drupal\Core\Url;
 use Drupal\styleguide\GeneratorInterface;
 use Drupal\styleguide\Plugin\StyleguidePluginBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -686,8 +687,12 @@ class defaultStyleguide extends StyleguidePluginBase {
       'content' => [
         [$this->generator->paragraphs(1)],
         [
-          '#theme' => 'more_help_link',
-          '#url' => $current_url,
+          '#type' => 'link',
+          '#url' => Url::fromUserInput($current_url),
+          '#title' => t('More help'),
+          '#attributes' => array(
+            'class' => array('icon-help'),
+          ),
         ],
       ],
       'group' => $this->t('Link')
@@ -697,9 +702,8 @@ class defaultStyleguide extends StyleguidePluginBase {
       'content' => [
         [$this->generator->paragraphs(1)],
         [
-          '#theme' => 'more_link',
-          '#url' => $current_url,
-          '#title' => $this->generator->sentence(),
+          '#type' => 'more_link',
+          '#url' => Url::fromUserInput($current_url),
         ],
       ],
       'group' => $this->t('Link')
