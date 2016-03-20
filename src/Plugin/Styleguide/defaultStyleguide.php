@@ -9,6 +9,7 @@ namespace Drupal\styleguide\Plugin\Styleguide;
 
 use Drupal\Core\Block\BlockManager;
 use Drupal\Core\Breadcrumb\ChainBreadcrumbBuilderInterface;
+use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\FormBuilder;
 use Drupal\Core\Form\FormState;
 use Drupal\Core\Menu\MenuLinkTreeInterface;
@@ -87,6 +88,13 @@ class defaultStyleguide extends StyleguidePluginBase {
   protected $themeManager;
 
   /**
+   * The module handler service.
+   *
+   * @var ModuleHandlerInterface
+   */
+  protected $moduleHandler;
+
+  /**
    * Constructs a new defaultStyleguide.
    *
    * @param array $configuration
@@ -100,10 +108,11 @@ class defaultStyleguide extends StyleguidePluginBase {
    * @param \Drupal\Core\Routing\CurrentRouteMatch $current_route_match
    * @param BlockManager $block_manager
    * @param ThemeManagerInterface $theme_manager
+   * @param ModuleHandlerInterface $module_handler
    * @internal param \Drupal\Core\Breadcrumb\ChainBreadcrumbBuilderInterface $breadcrumb
    * @internal param \Drupal\styleguide\GeneratorInterface $generator
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, GeneratorInterface $styleguide_generator, RequestStack $request_stack, MenuLinkTreeInterface $link_tree, FormBuilder $form_builder, ChainBreadcrumbBuilderInterface $breadcrumb_manager, CurrentRouteMatch $current_route_match, BlockManager $block_manager, ThemeManagerInterface $theme_manager) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, GeneratorInterface $styleguide_generator, RequestStack $request_stack, MenuLinkTreeInterface $link_tree, FormBuilder $form_builder, ChainBreadcrumbBuilderInterface $breadcrumb_manager, CurrentRouteMatch $current_route_match, BlockManager $block_manager, ThemeManagerInterface $theme_manager, ModuleHandlerInterface $module_handler) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
 
     $this->generator = $styleguide_generator;
@@ -114,6 +123,7 @@ class defaultStyleguide extends StyleguidePluginBase {
     $this->currentRouteMatch = $current_route_match;
     $this->blockManager = $block_manager;
     $this->themeManager = $theme_manager;
+    $this->moduleHandler = $module_handler;
   }
 
   /**
@@ -131,7 +141,8 @@ class defaultStyleguide extends StyleguidePluginBase {
       $container->get('breadcrumb'),
       $container->get('current_route_match'),
       $container->get('plugin.manager.block'),
-      $container->get('theme.manager')
+      $container->get('theme.manager'),
+      $container->get('module_handler')
     );
   }
 
@@ -631,6 +642,33 @@ class defaultStyleguide extends StyleguidePluginBase {
       'content' => $this->formBuilder->getForm('Drupal\styleguide\Form\StyleguideConfirmForm'),
       'group' => $this->t('System')
     );
+
+    if ($this->moduleHandler->moduleExists('filter')) {
+      $items['text_format'] = array(
+        'title' => t('Text format'),
+        'content' => $this->formBuilder->getForm('Drupal\styleguide\Form\StyleguideForm', array('text_format')),
+        'group' => t('System'),
+      );
+      $items['filter_tips'] = array(
+        'title' => t('Filter tips, short'),
+        'content' => array(
+          '#theme' => 'filter_tips',
+          '#tips' => _filter_tips(-1, FALSE),
+          '#long' => FALSE,
+        ),
+        'group' => t('System'),
+      );
+      $items['filter_tips_long'] = array(
+        'title' => t('Filter tips, long'),
+        'content' => array(
+          '#theme' => 'filter_tips',
+          '#tips' => _filter_tips(-1, TRUE),
+          '#long' => TRUE,
+        ),
+        'group' => t('System')
+      );
+    }
+
     $items['pager'] = array(
       'title' => $this->t('Pager'),
       'content' => $this->generator->pager(),

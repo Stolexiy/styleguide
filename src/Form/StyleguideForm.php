@@ -8,6 +8,7 @@ namespace Drupal\styleguide\Form;
 
 
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
+use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\styleguide\GeneratorInterface;
@@ -23,20 +24,32 @@ class StyleguideForm extends FormBase implements ContainerInjectionInterface {
   protected $generator;
 
   /**
+   * The module handler service.
+   *
+   * @var ModuleHandlerInterface
+   */
+  protected $moduleHandler;
+
+  /**
    * Constructs a new StyleguideForm.
    *
-   * @param \Drupal\styleguide\Generator $styleguide_generator
+   * @param \Drupal\styleguide\Generator|GeneratorInterface $styleguide_generator
    *   The styleguide generator service.
+   * @param ModuleHandlerInterface $module_handler
    */
-  public function __construct(GeneratorInterface $styleguide_generator) {
+  public function __construct(GeneratorInterface $styleguide_generator, ModuleHandlerInterface $module_handler) {
     $this->generator = $styleguide_generator;
+    $this->moduleHandler = $module_handler;
   }
 
   /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    return new static($container->get('styleguide.generator'));
+    return new static(
+      $container->get('styleguide.generator'),
+      $container->get('module_handler')
+    );
   }
 
   /**
@@ -219,6 +232,16 @@ class StyleguideForm extends FormBase implements ContainerInjectionInterface {
       '#type' => 'button',
       '#value' => $this->t('Button'),
     );
+
+    if ($this->moduleHandler->moduleExists('filter')) {
+      $form['text_format'] = array(
+        '#title' => $this->generator->sentence(),
+        '#type' => 'text_format',
+        '#default_value' => $this->generator->paragraphs(5, TRUE),
+        '#format' => filter_default_format(),
+      );
+    }
+
     if (!empty($form_keys)) {
       $items = array();
       foreach ($form_keys as $key) {
