@@ -539,7 +539,7 @@ class defaultStyleguide extends StyleguidePluginBase {
     // Form elements.
     $elements = $this->formBuilder->buildForm('Drupal\styleguide\Form\StyleguideForm', new FormState());
     $basic = array();
-    $fieldsets = array();
+    $details = array();
     $tabs = array();
     $markup = array();
     foreach (Element::children($elements) as $key) {
@@ -549,8 +549,8 @@ class defaultStyleguide extends StyleguidePluginBase {
       elseif (!isset($elements[$key]['#type']) || $elements[$key]['#type'] == 'item') {
         $markup[] = $key;
       }
-      elseif ($elements[$key]['#type'] == 'fieldset') {
-        $fieldsets[] = $key;
+      elseif ($elements[$key]['#type'] == 'details') {
+        $details[] = $key;
       }
       // We skip these.
       elseif (in_array($elements[$key]['#type'], array('button', 'submit', 'image_button'))) {
@@ -585,9 +585,14 @@ class defaultStyleguide extends StyleguidePluginBase {
       'content' => $this->formBuilder->getForm('Drupal\styleguide\Form\StyleguideForm', $markup),
       'group' => $this->t('Forms'),
     );
-    $items['form-fieldsets'] = array(
-      'title' => $this->t('Forms, fieldsets'),
-      'content' => $this->formBuilder->getForm('Drupal\styleguide\Form\StyleguideForm', $fieldsets),
+    $items['form-details'] = array(
+      'title' => $this->t('Forms, details'),
+      'content' => $this->formBuilder->getForm('Drupal\styleguide\Form\StyleguideForm', $details),
+      'group' => $this->t('Forms'),
+    );
+    $items['form-fieldset'] = array(
+      'title' => $this->t('Forms, fieldset'),
+      'content' => $this->formBuilder->getForm('Drupal\styleguide\Form\StyleguideForm', array('fieldset')),
       'group' => $this->t('Forms'),
     );
     $items['form-vertical-tabs'] = array(

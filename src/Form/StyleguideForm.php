@@ -160,43 +160,41 @@ class StyleguideForm extends FormBase implements ContainerInjectionInterface {
       '#delta' => 10,
       '#description' => $this->generator->sentence(),
     );
-    $form['fieldset-collapsed'] = array(
-      '#type' => 'fieldset',
-      '#title' => $this->t('Fieldset collapsed'),
-      '#collapsible' => TRUE,
-      '#collapsed' => TRUE,
+    $form['details-close'] = array(
+      '#type' => 'details',
+      '#title' => $this->t('Details closed'),
+      '#open' => FALSE,
       '#description' => $this->generator->sentence(),
     );
-    $form['fieldset-collapsible'] = array(
-      '#type' => 'fieldset',
-      '#title' => $this->t('Fieldset collapsible'),
-      '#collapsible' => TRUE,
+    $form['details-open'] = array(
+      '#type' => 'details',
+      '#title' => $this->t('Details open'),
+      '#open' => TRUE,
       '#description' => $this->generator->sentence(),
     );
     $form['fieldset'] = array(
       '#type' => 'fieldset',
       '#title' => $this->t('Fieldset'),
-      '#collapsible' => FALSE,
       '#description' => $this->generator->sentence(),
     );
-    $fieldsets = array('fieldset', 'fieldset-collapsed', 'fieldset-collapsible');
+    $elements = array('fieldset', 'details-close', 'details-open');
     $count = 0;
     foreach ($form as $key => $value) {
       if ($value['#type'] != 'fieldset' && $value['#type'] != 'checkbox' && $count < 2) {
         $count++;
-        foreach ($fieldsets as $item) {
+        foreach ($elements as $item) {
           $form[$item][$key . '-' .  $item] = $value;
         }
       }
     }
-    $form['vertical_tabs']['fieldsets'] = array(
+    $form['vertical_tabs']['elements'] = array(
       '#type' => 'vertical_tabs',
       '#default_tab' => 'fieldset',
     );
-    foreach ($fieldsets as $fieldset) {
-      $form['vertical_tabs'][$fieldset] = $form[$fieldset];
-      $form['vertical_tabs'][$fieldset]['#type'] = 'details';
-      $form['vertical_tabs'][$fieldset]['#group'] = 'fieldsets';
+    foreach ($elements as $element) {
+      $form['vertical_tabs'][$element] = $form[$element];
+      $form['vertical_tabs'][$element]['#type'] = 'details';
+      $form['vertical_tabs'][$element]['#group'] = 'elements';
     }
     $form['markup'] = array(
       '#markup' => $this->t('<p><em>Markup</em>: Note that markup does not allow titles or descriptions. Use "item" for those options.</p>') . $this->generator->paragraphs(1, TRUE),
