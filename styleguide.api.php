@@ -1,6 +1,11 @@
 <?php
 
 /**
+ * @addtogroup hooks
+ * @{
+ */
+
+/**
  * Register a style guide element for display.
  *
  * hook_styleguide() defines an array of items to render for theme
@@ -72,11 +77,12 @@ function hook_styleguide() {
  *
  * @see hook_styleguide()
  */
-function hook_styleguide_alter(&$items) {
+function hook_styleguide_alter($items) {
   // Add a class to the text test.
   $items['text']['content'] = '<div class="mytestclass">' . $items['text']['content'] . '</div>';
   // Remove the headings tests.
   unset($items['headings']);
+  return $items;
 }
 
 /**
@@ -101,3 +107,7 @@ function styleguide_styleguide_theme_info_alter(&$theme_info, $theme) {
     $theme_info['description'] = 'A basic theme for development.';
   }
 }
+
+/**
+ * @} End of "addtogroup hooks".
+ */
