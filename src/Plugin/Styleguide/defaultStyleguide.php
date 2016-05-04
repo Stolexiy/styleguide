@@ -759,8 +759,7 @@ class defaultStyleguide extends StyleguidePluginBase {
     );
 
     // Invoke hook_styleguide_alter()
-    $items = \Drupal::service('module_handler')->invokeAll('styleguide_alter', array($items));
-    //$items->merge($new_items);
+    \Drupal::service('module_handler')->alter('styleguide', $items);
 
     return $items;
   }
