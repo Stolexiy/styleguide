@@ -70,7 +70,9 @@ function hook_styleguide() {
  * Alter styleguide.
  *
  * @param &$vars
- *   An array of plugin data.
+ *   An array of plugin data. To override default styleguide behaviour, extend
+ *   defaultStyleguide. To replace default plugin with your own, unset the
+ *   default plugin using hook_styleguide_alter.
  *
  * @return
  *   No return value. Modify $vars by reference.
