@@ -1,21 +1,19 @@
 <?php
-/**
- * @file
- * Contains \Drupal\styleguide\Controller\StyleguideController.
- */
 
 namespace Drupal\styleguide\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Extension\ThemeHandlerInterface;
 use Drupal\Core\Link;
-use Drupal\Core\Render\Element;
 use Drupal\Core\Theme\ThemeManagerInterface;
 use Drupal\Core\Url;
 use Drupal\styleguide\StyleguidePluginManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
+/**
+ * The Styleguide controller.
+ */
 class StyleguideController extends ControllerBase {
 
   /**
@@ -82,7 +80,10 @@ class StyleguideController extends ControllerBase {
   }
 
   /**
+   * Build styleguide page.
+   *
    * @return array
+   *   Renderable array of styleguide items.
    */
   public function page() {
     // Get active theme.
@@ -175,7 +176,7 @@ class StyleguideController extends ControllerBase {
         'library' => [
           'styleguide/styleguide_css',
         ],
-      ]
+      ],
     ];
   }
 

@@ -1,4 +1,3 @@
-
 /* LTR */
 h2.styleguide {
   font: 16px bold helvetica, arial, sans-serif;
@@ -29,7 +28,7 @@ h2.styleguide {
 
 #styleguide-header a,
 #styleguide-header li a.active {
-  color: #0071B3;
+  color: #0071b3;
 }
 
 #styleguide-header .break {

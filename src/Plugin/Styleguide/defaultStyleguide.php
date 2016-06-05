@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\styleguide\Plugin\Styleguide\defaultStyleguide.
- */
-
 namespace Drupal\styleguide\Plugin\Styleguide;
 
 use Drupal\Core\Block\BlockManager;
@@ -24,12 +19,14 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
+ * Default Styleguide items implementation.
+ *
  * @Plugin(
  *   id = "default_styleguide",
  *   label = @Translation("Default Styleguide elements")
  * )
  */
-class defaultStyleguide extends StyleguidePluginBase {
+class DefaultStyleguide extends StyleguidePluginBase {
 
   /**
    * The styleguide generator service.
@@ -109,6 +106,7 @@ class defaultStyleguide extends StyleguidePluginBase {
    * @param BlockManager $block_manager
    * @param ThemeManagerInterface $theme_manager
    * @param ModuleHandlerInterface $module_handler
+   *
    * @internal param \Drupal\Core\Breadcrumb\ChainBreadcrumbBuilderInterface $breadcrumb
    * @internal param \Drupal\styleguide\GeneratorInterface $generator
    */
@@ -147,7 +145,7 @@ class defaultStyleguide extends StyleguidePluginBase {
   }
 
   /**
-   * @return array
+   * {@inheritdoc}
    */
   public function items() {
     $current_url = $this->requestStack->getCurrentRequest()->getRequestUri();
@@ -355,7 +353,7 @@ class defaultStyleguide extends StyleguidePluginBase {
         '#theme' => 'item_list',
         '#items' => $this->generator->wordList(),
         '#list_type' => 'ul',
-        '#title' => $this->generator->words(3, 'ucfirst')
+        '#title' => $this->generator->words(3, 'ucfirst'),
       ],
       'group' => $this->t('Lists'),
     );
@@ -414,7 +412,7 @@ class defaultStyleguide extends StyleguidePluginBase {
     $items['menu_link'] = array(
       'title' => $this->t('Menu link'),
       'content' => $this->generator->menuItem($current_url),
-      'group' => $this->t('Menus')
+      'group' => $this->t('Menus'),
     );
     $items['table'] = array(
       'title' => $this->t('Table'),
@@ -493,7 +491,7 @@ class defaultStyleguide extends StyleguidePluginBase {
       'group' => $this->t('Media'),
     );
     $content = array();
-    for ($i = 1; $i <=6; $i++) {
+    for ($i = 1; $i <= 6; $i++) {
       $content[] = [
         '#type' => 'inline_template',
         '#template' => '<h{{ i }}>h{{ i }}: {{ wordList }}</h{{ i }}>',
@@ -509,7 +507,7 @@ class defaultStyleguide extends StyleguidePluginBase {
       'group' => $this->t('Text'),
     );
     $content = array();
-    for ($i = 1; $i <=6; $i++) {
+    for ($i = 1; $i <= 6; $i++) {
       $content[] = [
         '#type' => 'inline_template',
         '#template' => '<h{{ i }}>h{{ i }}: {{ wordList }}</h{{ i }}>{{ paragraph }}',
@@ -618,7 +616,7 @@ class defaultStyleguide extends StyleguidePluginBase {
         '#url' => 'rss.xml',
         '#title' => $this->t('Syndicate'),
       ],
-      'group' => $this->t('System')
+      'group' => $this->t('System'),
     );
     // Builds a link to the Styleguide maintenance page.
     $route_name = 'styleguide.maintenance_page.' . $this->themeManager->getActiveTheme()->getName();
@@ -629,18 +627,18 @@ class defaultStyleguide extends StyleguidePluginBase {
           'target' => array('_blank'),
         ),
       )),
-      'group' => $this->t('System')
+      'group' => $this->t('System'),
     );
     $plugin = $this->blockManager->createInstance('system_powered_by_block');
     $items['system_powered_by'] = array(
       'title' => $this->t('System powered by'),
       'content' => $plugin->build(),
-      'group' => $this->t('System')
+      'group' => $this->t('System'),
     );
     $items['confirm_form'] = array(
       'title' => $this->t('Confirm form'),
       'content' => $this->formBuilder->getForm('Drupal\styleguide\Form\StyleguideConfirmForm'),
-      'group' => $this->t('System')
+      'group' => $this->t('System'),
     );
 
     if ($this->moduleHandler->moduleExists('filter')) {
@@ -665,14 +663,14 @@ class defaultStyleguide extends StyleguidePluginBase {
           '#tips' => _filter_tips(-1, TRUE),
           '#long' => TRUE,
         ),
-        'group' => t('System')
+        'group' => t('System'),
       );
     }
 
     $items['pager'] = array(
       'title' => $this->t('Pager'),
       'content' => $this->generator->pager(),
-      'group' => $this->t('User interface')
+      'group' => $this->t('User interface'),
     );
     $items['progress_bar'] = array(
       'title' => $this->t('Progress bar'),
@@ -681,19 +679,19 @@ class defaultStyleguide extends StyleguidePluginBase {
         '#percent' => 57,
         '#message' => $this->generator->sentence(2),
       ],
-      'group' => $this->t('User interface')
+      'group' => $this->t('User interface'),
     );
     // Use alternative item name to avoid conflict with main breadcrumb.
     $breadcrumb = $this->breadcrumbManager->build($this->currentRouteMatch);
     $items['styleguide_breadcrumb'] = array(
       'title' => $this->t('Breadcrumb'),
       'content' => $breadcrumb->toRenderable(),
-      'group' => $this->t('User interface')
+      'group' => $this->t('User interface'),
     );
     $items['link'] = array(
       'title' => $this->t('Link'),
       'content' => $this->buildLink($this->generator->words(2), $current_url),
-      'group' => $this->t('Link')
+      'group' => $this->t('Link'),
     );
     $items['links'] = array(
       'title' => $this->t('Links'),
@@ -701,7 +699,7 @@ class defaultStyleguide extends StyleguidePluginBase {
         '#theme' => 'links',
         '#links' => $this->generator->links($current_url),
       ],
-      'group' => $this->t('Link')
+      'group' => $this->t('Link'),
     );
     $items['mark_new'] = array(
       'title' => $this->t('Mark, new'),
@@ -712,7 +710,7 @@ class defaultStyleguide extends StyleguidePluginBase {
           '#type' => MARK_NEW,
         ],
       ],
-      'group' => $this->t('Link')
+      'group' => $this->t('Link'),
     );
     $items['mark_updated'] = array(
       'title' => $this->t('Mark, updated'),
@@ -723,7 +721,7 @@ class defaultStyleguide extends StyleguidePluginBase {
           '#type' => MARK_UPDATED,
         ],
       ],
-      'group' => $this->t('Link')
+      'group' => $this->t('Link'),
     );
     $items['more_help_link'] = array(
       'title' => $this->t('More help link'),
@@ -738,7 +736,7 @@ class defaultStyleguide extends StyleguidePluginBase {
           ),
         ],
       ],
-      'group' => $this->t('Link')
+      'group' => $this->t('Link'),
     );
     $items['more_link'] = array(
       'title' => $this->t('More link'),
@@ -749,7 +747,7 @@ class defaultStyleguide extends StyleguidePluginBase {
           '#url' => Url::fromUserInput($current_url),
         ],
       ],
-      'group' => $this->t('Link')
+      'group' => $this->t('Link'),
     );
     $items['monospace'] = array(
       'title' => $this->t('Monospace'),

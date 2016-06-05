@@ -1,8 +1,4 @@
 <?php
-/**
- * @file
- * Contains \Drupal\styleguide\StyleguidePluginManager.
- */
 
 namespace Drupal\styleguide;
 
@@ -11,6 +7,9 @@ use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Plugin\DefaultPluginManager;
 
+/**
+ * The Styleguide plugins manager.
+ */
 class StyleguidePluginManager extends DefaultPluginManager {
 
   /**

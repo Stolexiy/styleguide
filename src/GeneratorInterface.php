@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\styleguide\GeneratorInterface.
- */
-
 namespace Drupal\styleguide;
 
 /**
@@ -17,9 +12,12 @@ interface GeneratorInterface {
   /**
    * Return a simple array of words.
    *
-   * @param $size
+   * @param int $size
    *   The size of the list to return.
-   * @return
+   * @param int $words
+   *   The number of words to generate.
+   *
+   * @return array
    *   An array of words.
    */
   public function wordList($size = 5, $words = 3);
@@ -27,10 +25,11 @@ interface GeneratorInterface {
   /**
    * Return a random word or words.
    *
-   * @param $size
+   * @param int $size
    *   The number of words to return.
-   * @param $case
-   *   A string indicating the case to return. This is the name of a PHP function.
+   * @param string $case
+   *   A string indicating the case to return.
+   *   This is the name of a PHP function.
    *   options are 'ucfirst', 'ucwords', 'strtoupper', and 'strtolower'.
    *   Defaults to return strtolower().
    */
@@ -39,9 +38,10 @@ interface GeneratorInterface {
   /**
    * Return a random table header array.
    *
-   * @param $size
+   * @param int $size
    *   The size of the list to return.
-   * @return
+   *
+   * @return array
    *   An array of header elements.
    */
   public function tableHeader($size = 5);
@@ -49,9 +49,10 @@ interface GeneratorInterface {
   /**
    * Return a random table row array.
    *
-   * @param $size
+   * @param int $size
    *   The size of the list to return.
-   * @return
+   *
+   * @return array
    *   An array of row elements.
    */
   public function tableRows($size = 5);
@@ -59,19 +60,20 @@ interface GeneratorInterface {
   /**
    * Lorum ipsum text, used to generate words and phrases.
    *
-   * @param $size
+   * @param int $size
    *   The size of the list to return.
-   * @param $words
+   * @param int $words
    *   The number of words to return. Pass 0 for a whole paragraph.
-   * @param $case
+   * @param string $case
    *   The case of the text. Options are 'mixed', 'upper' and 'lower'.
-   * @param $returns
+   * @param bool $returns
    *   Indicates whether line returns should not be stripped out of the result.
-   * @param $punctuation
+   * @param bool $punctuation
    *   Indicates whether punctuation should not be stripped out of the result.
-   * @param $array
+   * @param bool $array
    *   Indicates that the return value should be an array instead of a string.
-   * @return
+   *
+   * @return string|array
    *   A string or array of content.
    */
   public function lorem($size = 5, $words = 0, $case = 'mixed', $returns = TRUE, $punctuation = TRUE, $array = FALSE);
@@ -83,7 +85,8 @@ interface GeneratorInterface {
    *   The number of paragraphs to return.
    * @param bool $render
    *   Allow to choose render the paragraph or return renderable array.
-   * @return  array|string HTML paragraphs.
+   *
+   * @return array|string HTML paragraphs.
    *   Renderable array or string of HTML paragraphs.
    */
   public function paragraphs($size = 5, $render = FALSE);
@@ -91,11 +94,12 @@ interface GeneratorInterface {
   /**
    * Generate a default image for display.
    *
-   * @param $image
+   * @param string $image
    *   The name of the image. Will be prefixed with 'styleguide-image-'.
-   * @param $type
+   * @param string $type
    *   The file type, (jpg, png, gif). Do not include a dot.
-   * @return
+   *
+   * @return string
    *    The Drupal path to the file.
    */
   public function image($image = 'vertical', $type = 'jpg');
@@ -109,36 +113,40 @@ interface GeneratorInterface {
   public function sentence($link = FALSE);
 
   /**
-   * Simulate Drupal pagination,
+   * Simulate Drupal pagination,.
    *
-   * @param $size
+   * @param int $size
    *   The number of page numbers to display.
-   * @param $total
+   * @param int $total
    *   The total number of pages to simulate.
-   * @return
+   *
+   * @return array
    *   A Drupal pager HTML element.
    */
   public function pager($size = 8, $total = 20);
 
   /**
-   * Generate a array of random links
+   * Generate a array of random links.
    *
-   * @param $url
+   * @param string $url
    *   The internal path or external URL being linked to.
-   * @param $size
+   * @param int $size
    *   The total number of links to generate .
-   * @return
+   *
+   * @return array
    *   A array of random links
    */
   public function links($url, $size = 4);
 
   /**
-   * Generate a random menu item
+   * Generate a random menu item.
    *
-   * @param $url
+   * @param string $url
    *   The internal path or external URL being linked to.
-   * @return
-   *   A random menu item, see menu_tree_page_data for a description of the data structure.
+   *
+   * @return array
+   *   A random menu item, see menu_tree_page_data for a description of
+   *   the data structure.
    */
   public function menuItem($url);
 
@@ -146,4 +154,5 @@ interface GeneratorInterface {
    * Generate a links array for theme_links.
    */
   public function ulLinks();
+
 }

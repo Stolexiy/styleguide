@@ -1,8 +1,4 @@
 <?php
-/**
- * @file
- * Contains \Drupal\styleguide\StyleguideRoutes.
- */
 
 namespace Drupal\styleguide;
 
@@ -11,6 +7,9 @@ use Drupal\Core\Extension\ThemeHandlerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Routing\Route;
 
+/**
+ * The Styleguide routers.
+ */
 class StyleguideRoutes implements ContainerInjectionInterface {
 
   /**
@@ -80,4 +79,5 @@ class StyleguideRoutes implements ContainerInjectionInterface {
 
     return $routes;
   }
+
 }

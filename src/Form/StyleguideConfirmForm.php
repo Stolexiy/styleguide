@@ -1,8 +1,4 @@
 <?php
-/**
- * @file
- * Contains \Drupal\styleguide\Form\StyleguideConfirmForm.
- */
 
 namespace Drupal\styleguide\Form;
 
@@ -10,6 +6,9 @@ use Drupal\Core\Form\ConfirmFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 
+/**
+ * The Styleguide confirm form example.
+ */
 class StyleguideConfirmForm extends ConfirmFormBase {
 
   /**
@@ -51,4 +50,5 @@ class StyleguideConfirmForm extends ConfirmFormBase {
    *   The current state of the form.
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {}
+
 }

@@ -1,8 +1,4 @@
 <?php
-/**
- * @file
- * Contains \Drupal\styleguide\Theme\StyleguideThemeNegotiator.
- */
 
 namespace Drupal\styleguide\Theme;
 
@@ -13,6 +9,9 @@ use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Theme\ThemeNegotiatorInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
+/**
+ * The Styleguide Theme Negotiator.
+ */
 class StyleguideThemeNegotiator implements ThemeNegotiatorInterface, ContainerInjectionInterface {
 
   /**
@@ -98,4 +97,5 @@ class StyleguideThemeNegotiator implements ThemeNegotiatorInterface, ContainerIn
   public function determineActiveTheme(RouteMatchInterface $route_match) {
     return $this->themeName;
   }
+
 }

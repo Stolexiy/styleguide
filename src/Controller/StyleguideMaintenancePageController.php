@@ -1,17 +1,15 @@
 <?php
-/**
- * @file
- * Contains \Drupal\styleguide\Controller\StyleguideMaintenancePageController.
- */
 
 namespace Drupal\styleguide\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Render\BareHtmlPageRendererInterface;
-use Drupal\Core\Render\Element;
 use Drupal\styleguide\GeneratorInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
+/**
+ * The Styleguide maintainers page controller.
+ */
 class StyleguideMaintenancePageController extends ControllerBase {
 
   /**

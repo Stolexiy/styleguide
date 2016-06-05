@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\styleguide\Plugin\StyleguidePluginBase.
- */
-
 namespace Drupal\styleguide\Plugin;
 
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
@@ -25,8 +20,9 @@ abstract class StyleguidePluginBase extends PluginBase implements StyleguideInte
    *   Text displayed in the link.
    * @param string $uri
    *   Url used in the link.
+   *
    * @return string
-   *  The renderable array.
+   *   The renderable array.
    */
   public function buildLink($text, $uri) {
     $url = Url::fromUserInput($uri);
@@ -45,6 +41,7 @@ abstract class StyleguidePluginBase extends PluginBase implements StyleguideInte
    *   (optional) An associative array of parameter names and values.
    * @param array $options
    *   (optional) An associative array of additional options.
+   *
    * @return array
    *   The renderable array.
    */
@@ -52,4 +49,5 @@ abstract class StyleguidePluginBase extends PluginBase implements StyleguideInte
     $link = Link::createFromRoute($text, $route_name, $route_parameters, $options);
     return $link->toRenderable();
   }
+
 }

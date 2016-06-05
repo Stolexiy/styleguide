@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\styleguide\Generator.
- */
-
 namespace Drupal\styleguide;
 
 use Drupal\Core\Url;
@@ -97,9 +92,11 @@ class Generator implements GeneratorInterface {
     switch ($case) {
       case 'mixed':
         break;
+
       case 'upper':
         $text = strtoupper($text);
         break;
+
       case 'lower':
         $text = strtolower($text);
         break;
@@ -179,7 +176,7 @@ class Generator implements GeneratorInterface {
       $explode[0] = render($link);
       $sentence = implode(' ', $explode);
     }
-    return  $sentence . '.';
+    return $sentence . '.';
   }
 
   /**

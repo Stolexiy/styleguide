@@ -1,6 +1,15 @@
 <?php
 
 /**
+ * @file
+ * The Styleguide module.
+ */
+
+/**
+ * Implements hook_theme().
+ */
+
+/**
  * Implements hook_theme().
  */
 function styleguide_theme($existing, $type, $theme, $path) {

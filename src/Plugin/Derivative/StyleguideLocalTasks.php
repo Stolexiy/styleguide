@@ -1,8 +1,4 @@
 <?php
-/**
- * @file
- * Contains \Drupal\styleguide\Plugin\Derivative\StyleguideLocalTasks.
- */
 
 namespace Drupal\styleguide\Plugin\Derivative;
 
@@ -12,6 +8,9 @@ use Drupal\Core\Extension\ThemeHandlerInterface;
 use Drupal\Core\Plugin\Discovery\ContainerDeriverInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
+/**
+ * Styleguide local tasks.
+ */
 class StyleguideLocalTasks extends DeriverBase implements ContainerDeriverInterface {
 
   /**
@@ -28,12 +27,13 @@ class StyleguideLocalTasks extends DeriverBase implements ContainerDeriverInterf
    */
   protected $themeHandler;
 
-
   /**
    * StyleguideLocalTasks constructor.
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
+   *   The Drupal config factory.
    * @param \Drupal\Core\Extension\ThemeHandlerInterface $theme_handler
+   *   The Drupal theme habdler.
    */
   public function __construct(ConfigFactoryInterface $config_factory, ThemeHandlerInterface $theme_handler) {
     $this->configFactory = $config_factory;
@@ -51,8 +51,7 @@ class StyleguideLocalTasks extends DeriverBase implements ContainerDeriverInterf
   }
 
   /**
-   * @param array $base_plugin_definition
-   * @return array
+   * {@inheritdoc}
    */
   public function getDerivativeDefinitions($base_plugin_definition) {
     $default_theme = $this->configFactory->get('system.theme')->get('default');
@@ -79,4 +78,5 @@ class StyleguideLocalTasks extends DeriverBase implements ContainerDeriverInterf
 
     return $this->derivatives;
   }
+
 }
