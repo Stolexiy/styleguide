@@ -5,9 +5,9 @@ namespace Drupal\styleguide\Plugin\Styleguide;
 use Drupal\styleguide\GeneratorInterface;
 use Drupal\styleguide\Plugin\StyleguidePluginBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\Theme\ThemeManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\image\Entity\ImageStyle;
+use Drupal\Component\Render\FormattableMarkup;
 
 /**
  * Image styles Styleguide items implementation.
@@ -27,13 +27,6 @@ class ImageStyleguide extends StyleguidePluginBase {
   protected $generator;
 
   /**
-   * The theme manager service.
-   *
-   * @var \Drupal\Core\Theme\ThemeManagerInterface
-   */
-  protected $themeManager;
-
-  /**
    * The module handler service.
    *
    * @var ModuleHandlerInterface
@@ -47,17 +40,12 @@ class ImageStyleguide extends StyleguidePluginBase {
    * @param string $plugin_id
    * @param mixed $plugin_definition
    * @param \Drupal\styleguide\GeneratorInterface $styleguide_generator
-   * @param ThemeManagerInterface $theme_manager
    * @param ModuleHandlerInterface $module_handler
-   *
-   * @internal param \Drupal\Core\Breadcrumb\ChainBreadcrumbBuilderInterface $breadcrumb
-   * @internal param \Drupal\styleguide\GeneratorInterface $generator
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, GeneratorInterface $styleguide_generator, ThemeManagerInterface $theme_manager, ModuleHandlerInterface $module_handler) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, GeneratorInterface $styleguide_generator, ModuleHandlerInterface $module_handler) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
 
     $this->generator = $styleguide_generator;
-    $this->themeManager = $theme_manager;
     $this->moduleHandler = $module_handler;
   }
 
@@ -70,7 +58,6 @@ class ImageStyleguide extends StyleguidePluginBase {
       $plugin_id,
       $plugin_definition,
       $container->get('styleguide.generator'),
-      $container->get('theme.manager'),
       $container->get('module_handler')
     );
   }
@@ -96,13 +83,13 @@ class ImageStyleguide extends StyleguidePluginBase {
           $summary = render($summary);
           $label = $effect->label();
           if ($summary) {
-            $details[] = format_string('%label: @summary', array(
+            $details[] = new FormattableMarkup('%label: @summary', array(
               '%label' => $label,
               '@summary' => $summary,
             ));
           }
           else {
-            $details[] = format_string('%label', array(
+            $details[] = new FormattableMarkup('%label', array(
               '%label' => $label,
             ));
           }
@@ -122,7 +109,7 @@ class ImageStyleguide extends StyleguidePluginBase {
             '#alt' => $title,
             '#title' => $title,
           ],
-          'group' => $this->t('Media')
+          'group' => $this->t('Media'),
         ];
       }
     }
