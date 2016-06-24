@@ -12,16 +12,17 @@ use Drupal\Core\Session\AccountInterface;
 use Drupal\node\Entity\Node;
 use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\Core\Render\RendererInterface;
+use Drupal\search\SearchPluginManager;
 
 /**
- * Node search Styleguide items implementation.
+ * Search Styleguide items implementation.
  *
  * @Plugin(
- *   id = "node_search_styleguide",
+ *   id = "search_styleguide",
  *   label = @Translation("Node search Styleguide elements")
  * )
  */
-class NodeSearchStyleguide extends StyleguidePluginBase {
+class SearchStyleguide extends StyleguidePluginBase {
 
   /**
    * The styleguide generator service.
@@ -73,6 +74,13 @@ class NodeSearchStyleguide extends StyleguidePluginBase {
   protected $renderer;
 
   /**
+   * The search manager.
+   *
+   * @var \Drupal\search\SearchPluginManager
+   */
+  protected $searchManager;
+
+  /**
    * Constructs a new imageStyleguide.
    *
    * @param array $configuration
@@ -85,12 +93,13 @@ class NodeSearchStyleguide extends StyleguidePluginBase {
    * @param \Drupal\Core\Session\AccountInterface $current_user
    * @param \Drupal\Core\Entity\EntityManagerInterface $entity_manager
    * @param \Drupal\Core\Render\RendererInterface $renderer
+   * @param \Drupal\search\SearchPluginManager $search_manager
    *
    * @internal param \Drupal\Core\Breadcrumb\ChainBreadcrumbBuilderInterface $breadcrumb
    * @internal param \Drupal\styleguide\GeneratorInterface $generator
    */
 
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, GeneratorInterface $styleguide_generator, ThemeManagerInterface $theme_manager, ModuleHandlerInterface $module_handler, FormBuilder $form_builder, AccountInterface $current_user, EntityManagerInterface $entity_manager, RendererInterface $renderer) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, GeneratorInterface $styleguide_generator, ThemeManagerInterface $theme_manager, ModuleHandlerInterface $module_handler, FormBuilder $form_builder, AccountInterface $current_user, EntityManagerInterface $entity_manager, RendererInterface $renderer, SearchPluginManager $search_manager) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->generator = $styleguide_generator;
     $this->themeManager = $theme_manager;
@@ -99,6 +108,7 @@ class NodeSearchStyleguide extends StyleguidePluginBase {
     $this->currentUser = $current_user;
     $this->entityManager = $entity_manager;
     $this->renderer = $renderer;
+    $this->searchManager = $search_manager;
   }
 
   /**
@@ -115,7 +125,8 @@ class NodeSearchStyleguide extends StyleguidePluginBase {
       $container->get('form_builder'),
       $container->get('current_user'),
       $container->get('entity.manager'),
-      $container->get('renderer')
+      $container->get('renderer'),
+      $container->get('plugin.manager.search')
     );
   }
 
@@ -143,41 +154,62 @@ class NodeSearchStyleguide extends StyleguidePluginBase {
         'group' => $this->t('Search')
       ];
 
-      // Generate some sample results.
-      $results = [];
-      for ($i = 0; $i < 5; $i++) {
-        // Render a fake node.
-        $node = Node::create([
-          'type' => 'article',
-          'title' => "Title {$i}",
-          'body' => $this->generator->words(20),
-          'in_preview' => true,
-        ]);
-        $node_render = $this->entityManager->getViewBuilder('node');
-        $build = $node_render->view($node, 'search_result');
-        unset($build['#theme']);
-        $rendered = $this->renderer->renderPlain($build);
+      // Generate sample results.
+      $this->searchResults($items);
+    }
 
-        $results[] = [
+    return $items;
+  }
+
+  /**
+   * Generate fake search results.
+   *
+   * @param $items
+   */
+  private function searchResults(&$items) {
+    $results = [];
+    $definitions = $this->searchManager->getDefinitions();
+    // If definitions has "user_search" provider, we should show user for admin users.
+    if (in_array('user_search', array_keys($definitions))) {
+      $definitions['user_search_admin'] = [
+        'id' => 'user_search_admin',
+        'provider' => 'user_admin',
+      ];
+    }
+    foreach ($definitions as $definition) {
+      $search_provider = $definition['provider'];
+      // Generate fake search results.
+      for ($i = 0; $i < 5; $i++) {
+        if ($search_provider == 'node') {
+          $title = $this->t('Node Search, results');
+          $result = $this->searchNodePrepare($i);
+        }
+        else if ($search_provider == 'user_admin') {
+          $title = $this->t('User Search, results (Has permission "administer users")');
+          $result = [
+            'title' => $this->generator->words(1) . " (user_{$i}@email.com)",
+          ];
+        }
+        else {
+          $title = $this->t('@type Search, results', ['@type' => ucfirst($search_provider)]);
+          $result = [
+            'title' => $this->generator->words(1),
+          ];
+        }
+
+        $results[$i] = [
           '#theme' => 'search_result',
           '#result' => [
             'link' => '#',
-            'title' => $node->label(),
-            'node' => $node,
-            'extra' => $this->moduleHandler->invokeAll('node_search_result', [$node]),
-            'snippet' => search_excerpt('title', $rendered),
-            'date' => time(),
-            'user' => [
-              '#theme' => 'username',
-              '#account' => $this->currentUser,
-            ],
           ],
-          '#plugin_id' => 'node_search'
+          '#plugin_id' => $definition['id'],
         ];
+        $results[$i]['#result'] = array_merge($results[$i]['#result'], $result);
       }
 
-      $items['node_search_results'] = [
-        'title' => $this->t('Search, results'),
+      // Attach fake search results to the items.
+      $items["{$definition['id']}_search_results"] = [
+        'title' => $title,
         'content' => [
           '#theme' => 'item_list__search_results',
           '#items' => $results,
@@ -186,13 +218,43 @@ class NodeSearchStyleguide extends StyleguidePluginBase {
           ],
           '#list_type' => 'ol',
           '#context' => [
-            'plugin' => 'node_search',
+            'plugin' => $definition['id'],
           ],
         ],
         'group' => $this->t('Search')
       ];
     }
-
-    return $items;
   }
+
+  /**
+   * Helper method to prepare a fake node for the search.
+   *
+   * @param $i
+   * @return array
+   */
+  private function searchNodePrepare($i) {
+    // Render a fake node.
+    $node = Node::create([
+      'type' => 'article',
+      'title' => "Title {$i}",
+      'body' => $this->generator->words(20),
+      'in_preview' => TRUE,
+    ]);
+    $node_render = $this->entityManager->getViewBuilder('node');
+    $build = $node_render->view($node, 'search_result');
+    unset($build['#theme']);
+    $rendered = $this->renderer->renderPlain($build);
+    return [
+      'title' => $node->label(),
+      'node' => $node,
+      'extra' => $this->moduleHandler->invokeAll('node_search_result', [$node]),
+      'snippet' => search_excerpt('title', $rendered),
+      'date' => time(),
+      'user' => [
+        '#theme' => 'username',
+        '#account' => $this->currentUser,
+      ],
+    ];
+  }
+
 }
