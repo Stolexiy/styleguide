@@ -5,12 +5,11 @@ namespace Drupal\styleguide\Plugin\Styleguide;
 use Drupal\styleguide\GeneratorInterface;
 use Drupal\styleguide\Plugin\StyleguidePluginBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\Theme\ThemeManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\FormBuilder;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\node\Entity\Node;
-use Drupal\Core\Entity\EntityManagerInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Render\RendererInterface;
 use Drupal\search\SearchPluginManager;
 
@@ -30,13 +29,6 @@ class SearchStyleguide extends StyleguidePluginBase {
    * @var \Drupal\styleguide\Generator
    */
   protected $generator;
-
-  /**
-   * The theme manager service.
-   *
-   * @var \Drupal\Core\Theme\ThemeManagerInterface
-   */
-  protected $themeManager;
 
   /**
    * The module handler service.
@@ -60,11 +52,11 @@ class SearchStyleguide extends StyleguidePluginBase {
   protected $currentUser;
 
   /**
-   * An entity manager object.
+   * The entity type manager.
    *
-   * @var \Drupal\Core\Entity\EntityManagerInterface
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
-  protected $entityManager;
+  protected $entityTypeManager;
 
   /**
    * The Renderer service to format the username and node.
@@ -87,25 +79,20 @@ class SearchStyleguide extends StyleguidePluginBase {
    * @param string $plugin_id
    * @param mixed $plugin_definition
    * @param \Drupal\styleguide\GeneratorInterface $styleguide_generator
-   * @param \Drupal\Core\Theme\ThemeManagerInterface $theme_manager
    * @param \Drupal\Core\Form\FormBuilder $form_builder
    * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
    * @param \Drupal\Core\Session\AccountInterface $current_user
-   * @param \Drupal\Core\Entity\EntityManagerInterface $entity_manager
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
    * @param \Drupal\Core\Render\RendererInterface $renderer
    * @param \Drupal\search\SearchPluginManager $search_manager
-   *
-   * @internal param \Drupal\Core\Breadcrumb\ChainBreadcrumbBuilderInterface $breadcrumb
-   * @internal param \Drupal\styleguide\GeneratorInterface $generator
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, GeneratorInterface $styleguide_generator, ThemeManagerInterface $theme_manager, ModuleHandlerInterface $module_handler, FormBuilder $form_builder, AccountInterface $current_user, EntityManagerInterface $entity_manager, RendererInterface $renderer, SearchPluginManager $search_manager = NULL) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, GeneratorInterface $styleguide_generator, ModuleHandlerInterface $module_handler, FormBuilder $form_builder, AccountInterface $current_user, EntityTypeManagerInterface $entityTypeManager, RendererInterface $renderer, SearchPluginManager $search_manager = NULL) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->generator = $styleguide_generator;
-    $this->themeManager = $theme_manager;
     $this->moduleHandler = $module_handler;
     $this->formBuilder = $form_builder;
     $this->currentUser = $current_user;
-    $this->entityManager = $entity_manager;
+    $this->entityTypeManager = $entityTypeManager;
     $this->renderer = $renderer;
     $this->searchManager = $search_manager;
   }
@@ -123,11 +110,10 @@ class SearchStyleguide extends StyleguidePluginBase {
       $plugin_id,
       $plugin_definition,
       $container->get('styleguide.generator'),
-      $container->get('theme.manager'),
       $container->get('module_handler'),
       $container->get('form_builder'),
       $container->get('current_user'),
-      $container->get('entity.manager'),
+      $container->get('entity_type.manager'),
       $container->get('renderer'),
       $search_manager
     );
@@ -252,10 +238,12 @@ class SearchStyleguide extends StyleguidePluginBase {
       'body' => $this->generator->words(20),
       'in_preview' => TRUE,
     ]);
-    $node_render = $this->entityManager->getViewBuilder('node');
-    $build = $node_render->view($node, 'search_result');
+    $build = $this->entityTypeManager
+      ->getViewBuilder('node')
+      ->view($node, 'search_result');
     unset($build['#theme']);
     $rendered = $this->renderer->renderPlain($build);
+
     return [
       'title' => $node->label(),
       'node' => $node,
