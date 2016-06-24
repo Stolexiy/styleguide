@@ -12,13 +12,14 @@ use Drupal\Core\Session\AccountInterface;
 use Drupal\node\Entity\Node;
 use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\Core\Render\RendererInterface;
+use Drupal\search\SearchPluginManager;
 
 /**
  * Search Styleguide items implementation.
  *
  * @Plugin(
  *   id = "search_styleguide",
- *   label = @Translation("Node search Styleguide elements")
+ *   label = @Translation("Search Styleguide elements")
  * )
  */
 class SearchStyleguide extends StyleguidePluginBase {
@@ -40,7 +41,7 @@ class SearchStyleguide extends StyleguidePluginBase {
   /**
    * The module handler service.
    *
-   * @var ModuleHandlerInterface
+   * @var \Drupal\Core\Extension\ModuleHandlerInterface
    */
   protected $moduleHandler;
 
@@ -73,24 +74,31 @@ class SearchStyleguide extends StyleguidePluginBase {
   protected $renderer;
 
   /**
-   * Constructs a new imageStyleguide.
+   * The search manager.
+   *
+   * @var \Drupal\search\SearchPluginManager
+   */
+  protected $searchManager;
+
+  /**
+   * Constructs a new searchStyleguide.
    *
    * @param array $configuration
    * @param string $plugin_id
    * @param mixed $plugin_definition
    * @param \Drupal\styleguide\GeneratorInterface $styleguide_generator
-   * @param ThemeManagerInterface $theme_manager
+   * @param \Drupal\Core\Theme\ThemeManagerInterface $theme_manager
    * @param \Drupal\Core\Form\FormBuilder $form_builder
-   * @param ModuleHandlerInterface $module_handler
+   * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
    * @param \Drupal\Core\Session\AccountInterface $current_user
    * @param \Drupal\Core\Entity\EntityManagerInterface $entity_manager
    * @param \Drupal\Core\Render\RendererInterface $renderer
+   * @param \Drupal\search\SearchPluginManager $search_manager
    *
    * @internal param \Drupal\Core\Breadcrumb\ChainBreadcrumbBuilderInterface $breadcrumb
    * @internal param \Drupal\styleguide\GeneratorInterface $generator
    */
-
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, GeneratorInterface $styleguide_generator, ThemeManagerInterface $theme_manager, ModuleHandlerInterface $module_handler, FormBuilder $form_builder, AccountInterface $current_user, EntityManagerInterface $entity_manager, RendererInterface $renderer) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, GeneratorInterface $styleguide_generator, ThemeManagerInterface $theme_manager, ModuleHandlerInterface $module_handler, FormBuilder $form_builder, AccountInterface $current_user, EntityManagerInterface $entity_manager, RendererInterface $renderer, SearchPluginManager $search_manager = NULL) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->generator = $styleguide_generator;
     $this->themeManager = $theme_manager;
@@ -99,12 +107,17 @@ class SearchStyleguide extends StyleguidePluginBase {
     $this->currentUser = $current_user;
     $this->entityManager = $entity_manager;
     $this->renderer = $renderer;
+    $this->searchManager = $search_manager;
   }
 
   /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    $search_manager = $container->has('plugin.manager.search')
+      ? $container->get('plugin.manager.search')
+      : NULL;
+
     return new static(
       $configuration,
       $plugin_id,
@@ -115,7 +128,8 @@ class SearchStyleguide extends StyleguidePluginBase {
       $container->get('form_builder'),
       $container->get('current_user'),
       $container->get('entity.manager'),
-      $container->get('renderer')
+      $container->get('renderer'),
+      $search_manager
     );
   }
 
@@ -140,7 +154,7 @@ class SearchStyleguide extends StyleguidePluginBase {
             '#markup' => '<h3>' . $this->t('Your search yielded no results.') . '</h3>',
           ],
         ],
-        'group' => $this->t('Search')
+        'group' => $this->t('Search'),
       ];
 
       // Generate sample results.
@@ -153,13 +167,15 @@ class SearchStyleguide extends StyleguidePluginBase {
   /**
    * Generate fake search results.
    *
-   * @param $items
+   * @param array $items
+   *   An array of the search Styleguide elements.
    */
   private function searchResults(&$items) {
     $results = [];
-    if (\Drupal::hasService('plugin.manager.search')) {
-      $definitions = \Drupal::service('plugin.manager.search')->getDefinitions();
-      // If definitions has "user_search" provider, we should show user for admin users.
+    if (!empty($this->searchManager)) {
+      $definitions = $this->searchManager->getDefinitions();
+      // If definitions has "user_search" provider,
+      // we should show user for admin users.
       if (in_array('user_search', array_keys($definitions))) {
         $definitions['user_search_admin'] = [
           'id' => 'user_search_admin',
@@ -213,7 +229,7 @@ class SearchStyleguide extends StyleguidePluginBase {
               'plugin' => $definition['id'],
             ],
           ],
-          'group' => $this->t('Search')
+          'group' => $this->t('Search'),
         ];
       }
     }
@@ -222,8 +238,11 @@ class SearchStyleguide extends StyleguidePluginBase {
   /**
    * Helper method to prepare a fake node for the search.
    *
-   * @param $i
+   * @param int $i
+   *   Search row number.
+   *
    * @return array
+   *   Returns a prepared node for the node search sample.
    */
   private function searchNodePrepare($i) {
     // Render a fake node.
