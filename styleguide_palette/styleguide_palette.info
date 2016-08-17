@@ -1,6 +1,0 @@
-name = Style guide palette
-description = Stores and displays color palettes.
-core = 7.x
-dependencies[] = styleguide
-configure = admin/config/user-interface/styleguide-palette
-files[] = styleguide_palette.test
