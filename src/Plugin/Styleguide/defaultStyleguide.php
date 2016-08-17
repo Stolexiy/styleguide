@@ -546,7 +546,8 @@ class DefaultStyleguide extends StyleguidePluginBase {
     }
 
     // Form elements.
-    $elements = $this->formBuilder->buildForm('Drupal\styleguide\Form\StyleguideForm', new FormState());
+    $form_state = new FormState();
+    $elements = $this->formBuilder->buildForm('Drupal\styleguide\Form\StyleguideForm', $form_state);
     $basic = array();
     $details = array();
     $tabs = array();
