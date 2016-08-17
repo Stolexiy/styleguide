@@ -55,7 +55,7 @@ class StyleguideRoutes implements ContainerInjectionInterface {
             '_title' => $theme->info['name'],
           ),
           array(
-            '_permission'  => 'access content',
+            '_permission'  => 'view style guides',
           ),
           array(
             '_admin_route' => FALSE,
@@ -68,7 +68,7 @@ class StyleguideRoutes implements ContainerInjectionInterface {
             '_title' => $theme->info['name'],
           ),
           array(
-            '_permission'  => 'access content',
+            '_permission'  => 'view style guides',
           ),
           array(
             '_admin_route' => FALSE,

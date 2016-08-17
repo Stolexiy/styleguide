@@ -3,7 +3,7 @@ styleguide.page:
   defaults:
     _controller: Drupal\styleguide\Controller\StyleguideController::page
   requirements:
-    _permission: 'access content'
+    _permission: 'view style guides'
   options:
     _admin_route: FALSE
 
@@ -12,7 +12,7 @@ styleguide.maintenance_page:
   defaults:
     _controller: Drupal\styleguide\Controller\StyleguideMaintenancePageController::page
   requirements:
-    _permission: 'access content'
+    _permission: 'view style guides'
   options:
     _admin_route: FALSE
 
