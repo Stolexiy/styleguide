@@ -85,9 +85,8 @@ class CommentStyleguide extends StyleguidePluginBase {
    */
   private function commentPrepare() {
     $comment = [
-      'entity_type' => 'node',
       'subject' => $this->generator->words(5),
-      'field_name' => 'comment',
+      'comment_type' => 'comment',
       'cid' => 0,
     ];
 
