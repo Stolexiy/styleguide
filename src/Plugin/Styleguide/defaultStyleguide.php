@@ -757,6 +757,9 @@ class DefaultStyleguide extends StyleguidePluginBase {
       'tag' => 'code',
     );
 
+    // Invoke hook_styleguide_alter()
+    $this->moduleHandler->alter('styleguide', $items);
+
     return $items;
   }
 
